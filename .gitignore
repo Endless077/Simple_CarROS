@@ -1,0 +1,64 @@
+#.gitignore
+
+###################################################################################################
+
+# Executables and binaries
+/bin/
+/*.out
+/*.o
+/*.so
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# CMake
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Build and Development Files
+/catkin_ws/build/
+/catkin_ws/devel/
+
+###################################################################################################
+
+# Logs and temporary files
+/logs/
+/*.log
+/*.bag
+
+# Configuration and cache files
+*.swp
+*.swo
+*.tmp
+*.bak
+*.old
+
+# Catkin Tools
+.catkin_tools/
+
+# ROS-specific files
+/rosinstall
+/.rosinstall
+
+# Other development tools
+*.class
+*.project
+*.cproject
+*.settings/
+
+# Hidden OS files
+.DS_Store
+Thumbs.db
+
+# User-specific settings
+.vscode/
+.idea/
+*.code-workspace
+*.iml
+
+###################################################################################################
