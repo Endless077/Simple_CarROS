@@ -1,0 +1,8 @@
+<launch>
+  <!-- Load Parameters (if not already loaded) -->
+  <param from="$(find my_car_control)/config/car_params.yaml" command="load"/>
+
+  <node pkg="robo_car_control" type="waypoint_manager.py" name="waypoint_manager" output="screen">
+    <param name="use_sim_time" value="true"/>
+  </node>
+</launch>

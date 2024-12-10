@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import rospy
-from robo_car_msgs.msg import MoveControl, SpeedControl
 from geometry_msgs.msg import Twist
+from robo_car_msgs.msg import MoveControl, SpeedControl
+
+###################################################################################################
 
 class TeleopNode:
     def __init__(self):
@@ -21,7 +23,7 @@ class TeleopNode:
         self.current_angular_speed = 1.0
 
     def cmd_callback(self, msg):
-        # Create a Twist message for publishing movement commands
+        # Create a Twist message to represent movement commands
         twist = Twist()
 
         if msg.command == MoveControl.FORWARD:
@@ -56,6 +58,7 @@ class TeleopNode:
         # Log the updated speed values
         rospy.loginfo("Speed changed: linear=%.2f, angular=%.2f" % (self.current_linear_speed, self.current_angular_speed))
 
+###################################################################################################
 
 if __name__ == '__main__':
     # Initialize the ROS node with the name 'teleop_node'
@@ -66,3 +69,5 @@ if __name__ == '__main__':
 
     # Keep the node running to process callbacks
     rospy.spin()
+
+###################################################################################################

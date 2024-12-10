@@ -1,0 +1,29 @@
+<launch>
+  <!-- Launch Gazebo GUI -->
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="world_name" default="$(find robo_car_description)/worlds/custom_world.world"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="headless" value="$(arg headless)"/>
+  </include>
+
+  <!-- Robot Spawn -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find robo_car_description)/urdf/robo_car.xacro" />
+  
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <param name="use_sim_time" value="true"/>
+    <param name="robot_description" textfile="$(find robo_car_description)/urdf/robo_car.xacro"/>
+  </node>
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-param robot_description
+              -model robo_car
+              -x 0 -y 0 -z 0.1" />
+</launch>

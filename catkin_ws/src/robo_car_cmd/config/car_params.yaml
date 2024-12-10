@@ -1,0 +1,8 @@
+# Linear and Angular default speed
+default_linear_speed: 0.5
+default_angular_speed: 1.0
+
+# Waypoints
+current_waypoint: [0.0, 0.0]
+last_waypoint: [ -1.0, -1.0]
+next_waypoint: [1.0, 1.0]
