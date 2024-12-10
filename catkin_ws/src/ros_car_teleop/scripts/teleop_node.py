@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 from geometry_msgs.msg import Twist
-from robo_car_msgs.msg import MoveControl, SpeedControl
+from ros_car_msgs.msg import MoveControl, SpeedControl
 
 ###################################################################################################
 

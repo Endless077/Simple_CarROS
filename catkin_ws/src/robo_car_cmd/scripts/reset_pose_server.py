@@ -2,7 +2,7 @@
 import rospy
 from geometry_msgs.msg import Twist
 from tf.transformations import quaternion_from_euler
-from robo_car_msgs.srv import ResetPose, ResetPoseResponse
+from ros_car_msgs.srv import ResetPose, ResetPoseResponse
 from gazebo_msgs.srv import SetModelState, SetModelStateRequest
 
 ###################################################################################################
@@ -31,7 +31,7 @@ class ResetPoseServer:
         state_req = SetModelStateRequest()
 
         # Name of the robot model in Gazebo
-        state_req.model_state.model_name = "robo_car"
+        state_req.model_state.model_name = "ros_car"
         state_req.model_state.pose.position.x = self.initial_x
         state_req.model_state.pose.position.y = self.initial_y
 

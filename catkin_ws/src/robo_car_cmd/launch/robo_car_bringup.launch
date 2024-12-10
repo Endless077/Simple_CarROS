@@ -1,7 +1,0 @@
-<launch>
-  <!-- Find the YAML parameter file -->
-  <param from="$(find robo_car_cmd)/config/car_params.yaml" command="load"/>
-
-  <!-- Startup the teleop node -->
-  <node pkg="robo_car_teleop" type="teleop_node.py" name="teleop_node" output="screen"/>
-</launch>

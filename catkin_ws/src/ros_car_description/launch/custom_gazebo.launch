@@ -4,7 +4,7 @@
   <arg name="use_sim_time" default="true"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
-  <arg name="world_name" default="$(find robo_car_description)/worlds/custom_world.world"/>
+  <arg name="world_name" default="$(find ros_car_description)/worlds/custom_world.world"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(arg world_name)"/>
@@ -15,15 +15,15 @@
   </include>
 
   <!-- Robot Spawn -->
-  <param name="robot_description" command="$(find xacro)/xacro $(find robo_car_description)/urdf/robo_car.xacro" />
+  <param name="robot_description" command="$(find xacro)/xacro $(find ros_car_description)/urdf/ros_car.xacro" />
   
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
     <param name="use_sim_time" value="true"/>
-    <param name="robot_description" textfile="$(find robo_car_description)/urdf/robo_car.xacro"/>
+    <param name="robot_description" textfile="$(find ros_car_description)/urdf/ros_car.xacro"/>
   </node>
 
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" output="screen"
         args="-param robot_description
-              -model robo_car
+              -model ros_car
               -x 0 -y 0 -z 0.1" />
 </launch>

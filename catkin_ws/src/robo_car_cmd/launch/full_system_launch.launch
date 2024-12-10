@@ -1,0 +1,16 @@
+<launch>
+  <!-- Launch Gazebo simulation environment and the robot -->
+  <include file="$(find ros_car_description)/launch/ros_car_gazebo.launch"/>
+
+  <!-- Load common parameters required for the robot -->
+  <include file="$(find ros_car_control)/launch/ros_car_bringup.launch"/>
+
+  <!-- Argument to specify the operational mode (default is autonomous) -->
+  <arg name="mode" default="autonomous"/>
+
+  <!-- Autonomous mode: Launch the autonomous control node -->
+  <include if="$(eval arg('mode') == 'autonomous')" file="$(find ros_car_control)/launch/ros_car_autonomous.launch"/>
+
+  <!-- Manual mode: Launch the manual control node -->
+  <include if="$(eval arg('mode') == 'manual')" file="$(find ros_car_control)/launch/ros_car_manual.launch"/>
+</launch>
