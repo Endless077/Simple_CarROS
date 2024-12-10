@@ -9,6 +9,9 @@
   <node pkg="ros_car_teleop" type="teleop_node.py" name="teleop_node" output="screen"/>
   <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_server"/>
   
+  <!-- Startup odom publisher node -->
+  <node pkg="ros_car_cmd" type="odom_publisher.py" name="odom_publisher" output="screen" />
+  
   <!-- Startup waypoint_manager and waypoint_visualizer for mange and visualize the waypoints -->
   <node pkg="ros_car_control" type="waypoint_manager.py" name="waypoint_manager" output="screen"/>
   <node pkg="ros_car_control" type="waypoint_visualizer.py" name="waypoint_visualizer" output="screen"/>

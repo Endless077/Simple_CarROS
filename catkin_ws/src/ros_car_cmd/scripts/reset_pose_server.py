@@ -8,7 +8,22 @@ from gazebo_msgs.srv import SetModelState, SetModelStateRequest
 ###################################################################################################
 
 class ResetPoseServer:
+    """
+    Reset Pose Server for resetting the robot's position and orientation in Gazebo.
+
+    This class provides a ROS service that allows external nodes to request a reset of the robot's
+    pose to predefined initial coordinates and orientation. It interacts with Gazebo's model state
+    service to achieve the pose reset.
+    """
     def __init__(self):
+        """
+        Initializes the ResetPoseServer.
+
+        - Retrieves initial position parameters (`initial_x`, `initial_y`, `initial_yaw`) from the ROS parameter server.
+        - Sets up a ROS service `/reset_pose` to handle pose reset requests.
+        - Waits for Gazebo's `/gazebo/set_model_state` service to become available and creates a proxy for it.
+        - Logs the readiness of the Reset Pose Service with the initial pose information.
+        """
         # Retrieve the initial position parameters from the parameter server
         self.initial_x = rospy.get_param('/initial_x', 0.0)     # Default x position
         self.initial_y = rospy.get_param('/initial_y', 0.0)     # Default y position
@@ -27,6 +42,19 @@ class ResetPoseServer:
                       self.initial_x, self.initial_y, self.initial_yaw)
 
     def handle_reset_pose(self, req):
+        """
+        Handles incoming reset pose service requests.
+
+        This method constructs a request to Gazebo's `/gazebo/set_model_state` service to reset the
+        robot's pose to the initial position and orientation. It sets the robot's velocity to zero
+        to ensure a stationary state after the reset.
+
+        Args:
+            req (ResetPose): The service request containing reset pose information (if any).
+
+        Returns:
+            ResetPoseResponse: The service response indicating the success or failure of the pose reset.
+        """
         # Create a request to set the model state in Gazebo
         state_req = SetModelStateRequest()
 
@@ -67,6 +95,13 @@ class ResetPoseServer:
 ###################################################################################################
 
 if __name__ == '__main__':
+    """
+    Main entry point for the ResetPoseServer node.
+
+    - Initializes the ROS node with the name 'reset_pose_server'.
+    - Creates an instance of the ResetPoseServer class.
+    - Keeps the node running to process reset pose requests.
+    """
     # Initialize the ROS node with the name 'reset_pose_server'
     rospy.init_node('reset_pose_server')
 

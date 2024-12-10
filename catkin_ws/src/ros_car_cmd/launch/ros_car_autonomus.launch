@@ -10,6 +10,9 @@
   <node pkg="ros_car_cmd" type="waypoint_navigator.py" name="waypoint_navigator" output="screen"/>
   <node pkg="ros_car_cmd" type="waypoint_visualizer.py" name="waypoint_visualizer" output="screen"/>
 
+  <!-- Startup odom publisher node -->
+  <node pkg="ros_car_cmd" type="odom_publisher.py" name="odom_publisher" output="screen" />
+
   <!-- Startup RViz with markers -->
   <node pkg="rviz" type="rviz" name="rviz" output="screen"/>
 

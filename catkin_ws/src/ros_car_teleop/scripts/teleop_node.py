@@ -12,6 +12,7 @@ class TeleopNode:
 
         # Subscriber for movement commands
         self.sub_cmd = rospy.Subscriber("/teleop_cmd", MoveControl, self.cmd_callback)
+        
         # Subscriber for setting linear/angular speeds
         self.sub_speed = rospy.Subscriber("/set_speed", SpeedControl, self.speed_callback)
         

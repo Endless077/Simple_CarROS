@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Robot Control via Web</title>
+    <!-- Include roslib.min.js for ROS communication -->
+    <script src="roslib.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .control-button {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            font-size: 20px;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        #waypoints {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .lever {
+            margin-top: 30px;
+        }
+        .lever label {
+            margin-right: 15px;
+            font-size: 16px;
+        }
+        #velocities {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Controls</h1>
+    
+    <!-- Control buttons for robot movement -->
+    <div>
+        <button id="forward" class="control-button">↑</button><br>
+        <button id="left" class="control-button">←</button>
+        <button id="stop" class="control-button">■</button>
+        <button id="right" class="control-button">→</button><br>
+        <button id="backward" class="control-button">↓</button>
+    </div>
+    
+    <!-- Display the robot's connection status -->
+    <div id="status">
+        Robot Status: <span id="robot-status">Inactive</span>
+    </div>
+    
+    <!-- Display the robot's current velocities -->
+    <div id="velocities">
+        <h3>Robot Velocities</h3>
+        Linear Velocity: <span id="linear-velocity">0.00 m/s</span><br>
+        Angular Velocity: <span id="angular-velocity">0.00 rad/s</span>
+    </div>
+    
+    <!-- Display the robot's waypoints -->
+    <div id="waypoints">
+        <h3>Waypoints</h3>
+        Last: <span id="last-waypoint">[0, 0]</span><br>
+        Current: <span id="current-waypoint">[0, 0]</span><br>
+        Next: <span id="next-waypoint">[0, 0]</span>
+    </div>
+    
+    <!-- Speed selection lever -->
+    <div class="lever">
+        <h3>Select Speed</h3>
+        <label>
+            <input type="radio" name="speed" value="slow"> Slow
+        </label>
+        <label>
+            <input type="radio" name="speed" value="moderate" checked> Moderate
+        </label>
+        <label>
+            <input type="radio" name="speed" value="fast"> Fast
+        </label>
+    </div>
+    
+    <script>
+        // Connect to rosbridge
+        var ros = new ROSLIB.Ros({
+            url : 'ws://localhost:9090'
+        });
+
+        // Handle connection to rosbridge
+        ros.on('connection', function() {
+            console.log('Connected to rosbridge!');
+            document.getElementById('robot-status').innerHTML = 'Connected';
+        });
+
+        // Handle connection error
+        ros.on('error', function(error) {
+            console.log('Error connecting to rosbridge:', error);
+            document.getElementById('robot-status').innerHTML = 'Connection Error';
+        });
+
+        // Handle disconnection
+        ros.on('close', function() {
+            console.log('Connection to rosbridge closed.');
+            document.getElementById('robot-status').innerHTML = 'Connection Closed';
+        });
+
+        // Publisher for /teleop_cmd topic
+        var cmdPub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/teleop_cmd',
+            messageType : 'ros_car_msgs/MoveControls'
+        });
+
+        // Publisher for /set_speed topic
+        var speedPub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/set_speed',
+            messageType : 'ros_car_msgs/SpeedControls'
+        });
+
+        // Function to send movement commands
+        function sendCommand(command) {
+            var cmdMsg = new ROSLIB.Message({
+                command: command
+            });
+            cmdPub.publish(cmdMsg);
+        }
+
+        // Function to set robot speed
+        function setSpeed(linear, angular) {
+            var speedMsg = new ROSLIB.Message({
+                linear_speed: linear,
+                angular_speed: angular
+            });
+            speedPub.publish(speedMsg);
+        }
+
+        // Attach event listeners to control buttons
+        document.getElementById('forward').addEventListener('click', function() {
+            sendCommand(1); // FORWARD
+        });
+
+        document.getElementById('backward').addEventListener('click', function() {
+            sendCommand(2); // BACKWARD
+        });
+
+        document.getElementById('left').addEventListener('click', function() {
+            sendCommand(3); // LEFT
+        });
+
+        document.getElementById('right').addEventListener('click', function() {
+            sendCommand(4); // RIGHT
+        });
+
+        document.getElementById('stop').addEventListener('click', function() {
+            sendCommand(5); // STOP
+        });
+
+        // Set default speed values
+        setSpeed(0.5, 1.0);
+
+        // Handle speed selection changes
+        var speedRadios = document.getElementsByName('speed');
+        speedRadios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.checked) {
+                    switch(this.value) {
+                        case 'slow':
+                            setSpeed(0.2, 0.5); // Slow speed
+                            break;
+                        case 'moderate':
+                            setSpeed(0.5, 1.0); // Moderate speed
+                            break;
+                        case 'fast':
+                            setSpeed(1.0, 2.0); // Fast speed
+                            break;
+                        default:
+                            setSpeed(0.5, 1.0); // Default to moderate
+                    }
+                    console.log('Speed set to: ' + this.value);
+                }
+            });
+        });
+
+        // Subscriber for robot velocities
+        var velocitySub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/odom',
+            messageType : 'nav_msgs/Odometry'
+        });
+
+        velocitySub.subscribe(function(message) {
+            // Extract linear and angular velocities from the message   
+            var linear = message.twist.twist.linear;
+            var angular = message.twist.twist.angular;
+
+            // Update HTML elements with the velocities
+            document.getElementById('linear-velocity').innerHTML = linear.x.toFixed(2) + ' m/s';
+            document.getElementById('angular-velocity').innerHTML = angular.z.toFixed(2) + ' rad/s';
+        });
+
+        // Subscriber for updated waypoints
+        var waypointSub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/current_waypoint',
+            messageType : 'geometry_msgs/Point'
+        });
+
+        var lastWaypointSub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/last_waypoint',
+            messageType : 'geometry_msgs/Point'
+        });
+
+        var nextWaypointSub = new ROSLIB.Topic({
+            ros : ros,
+            name : '/next_waypoint',
+            messageType : 'geometry_msgs/Point'
+        });
+        
+        // Update waypoints on subscription
+        lastWaypointSub.subscribe(function(message) {
+            document.getElementById('last-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
+        });
+
+        waypointSub.subscribe(function(message) {
+            document.getElementById('current-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
+        });
+
+        nextWaypointSub.subscribe(function(message) {
+            document.getElementById('next-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
+        });
+    </script>
+</body>
+</html>

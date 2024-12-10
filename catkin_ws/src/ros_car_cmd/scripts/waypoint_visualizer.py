@@ -5,15 +5,39 @@ from visualization_msgs.msg import Marker
 ###################################################################################################
 
 class WaypointVisualizer:
+    """
+    Waypoint Visualizer node for displaying robot waypoints in RViz.
+
+    This node publishes visualization markers for the last, current, and next waypoints
+    of the robot. It retrieves waypoint coordinates from the ROS parameter server and
+    updates the markers at a regular interval.
+    """
     def __init__(self):
+        """
+        Initializes the WaypointVisualizer.
+
+        - Sets up a publisher to the `/visualization_marker` topic for publishing Marker messages.
+        - Initializes a timer to trigger the `timer_callback` method every second.
+        - Logs the start of the Waypoint Visualizer.
+        """
         # Publisher to the /visualization_marker topic
         self.pub = rospy.Publisher('/visualization_marker', Marker, queue_size=10)
         # Timer to trigger updates every second
         self.timer = rospy.Timer(rospy.Duration(1.0), self.timer_callback) 
-        
+            
         rospy.loginfo("Waypoint Visualizer started.")
 
     def timer_callback(self, event):
+        """
+        Timer callback to update and publish waypoint markers.
+
+        This method is called periodically based on the timer interval.
+        It reads the latest waypoint coordinates from the ROS parameter server
+        and publishes corresponding visualization markers for each waypoint.
+
+        Args:
+            event (rospy.timer.TimerEvent): Timer event information (unused).
+        """
         # Read the waypoints from the parameter server
         last_wp = rospy.get_param('/last_waypoint', [0.0, 0.0])
         current_wp = rospy.get_param('/current_waypoint', [0.0, 0.0])
@@ -25,6 +49,18 @@ class WaypointVisualizer:
         self.publish_marker(next_wp, [1.0, 0.0, 0.0], "next_waypoint", 2)       # Red for next waypoint
 
     def publish_marker(self, wp, color, ns, id_):
+        """
+        Creates and publishes a visualization marker for a given waypoint.
+
+        This method constructs a `Marker` message with specified properties such as
+        position, color, and namespace, and publishes it to the `/visualization_marker` topic.
+
+        Args:
+            wp (list of float): The [x, y] coordinates of the waypoint.
+            color (list of float): The [r, g, b] color values for the marker.
+            ns (str): Namespace for the marker to categorize it.
+            id_ (int): Unique identifier for the marker within its namespace.
+        """
         # Create a Marker message
         marker = Marker()
         marker.header.frame_id = "odom"         # Reference frame for the markers
@@ -51,6 +87,13 @@ class WaypointVisualizer:
 ###################################################################################################
 
 if __name__ == '__main__':
+    """
+    Main entry point for the WaypointVisualizer node.
+
+    - Initializes the ROS node with the name 'waypoint_visualizer'.
+    - Creates an instance of the WaypointVisualizer class.
+    - Keeps the node running to process callbacks.
+    """
     # Initialize the ROS node with the name 'waypoint_visualizer'
     rospy.init_node('waypoint_visualizer')
 

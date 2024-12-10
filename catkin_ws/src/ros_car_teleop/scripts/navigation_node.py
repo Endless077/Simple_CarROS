@@ -2,11 +2,27 @@
 import rospy
 from geometry_msgs.msg import Twist
 from ros_car_msgs.msg import MoveControls, SpeedControls
-
+        
 ###################################################################################################
 
 class TeleopNode:
+    """
+    Teleoperation node for controlling the robot's movement through commands and set speeds.
+
+    This node reads parameters from the ROS parameter server to initialize speed settings and waypoints.
+    It subscribes to the `/teleop_cmd` topic to receive movement commands and to the `/set_speed` topic
+    to update linear and angular speeds. It publishes velocity commands to the `/cmd_vel` topic using
+    `Twist` messages.
+    """
     def __init__(self):
+        """
+        Initializes the TeleopNode.
+
+        - Reads initial speed values and waypoints from the ROS parameter server.
+        - Sets up subscribers for movement commands and speed adjustments.
+        - Sets up a publisher for sending velocity commands to `/cmd_vel`.
+        - Logs the initial waypoint information.
+        """
         # Read parameters from the parameter server
         self.current_linear_speed = rospy.get_param('/default_linear_speed', 0.5)
         self.current_angular_speed = rospy.get_param('/default_angular_speed', 1.0)
@@ -25,6 +41,15 @@ class TeleopNode:
         self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
 
     def speed_callback(self, msg):
+        """
+        Callback to update linear and angular speeds.
+
+        Updates the current linear and angular speeds based on the received `SpeedControls` message
+        and logs the updated speeds.
+
+        Args:
+            msg (SpeedControls): Message containing the new speed values.
+        """
         # Update linear and angular speeds from received message
         self.current_linear_speed = msg.linear_speed
         self.current_angular_speed = msg.angular_speed
@@ -32,6 +57,14 @@ class TeleopNode:
         rospy.loginfo("Speed changed: linear=%.2f, angular=%.2f" % (self.current_linear_speed, self.current_angular_speed))
 
     def cmd_callback(self, msg):
+        """
+        Callback to handle received movement commands.
+
+        Creates and publishes a `Twist` message based on the received `MoveControls` command.
+
+        Args:
+            msg (MoveControls): Message containing the movement command.
+        """
         # Create a Twist message to represent movement commands
         twist = Twist()
         
@@ -62,6 +95,13 @@ class TeleopNode:
 ###################################################################################################
 
 if __name__ == '__main__':
+    """
+    Main entry point for the TeleopNode.
+
+    - Initializes the ROS node with the name 'teleop_node'.
+    - Creates an instance of the TeleopNode class.
+    - Keeps the node running to process callbacks.
+    """
     # Initialize the ROS node with the name 'teleop_node'
     rospy.init_node('teleop_node')
 

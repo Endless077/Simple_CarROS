@@ -8,9 +8,9 @@ project(ros_car_cmd)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  ros_car_msgs
   rospy
   std_srvs
+  ros_car_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -40,7 +40,9 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add "message_generation" and every package in MSG_DEP_SET to
 ##     find_package(catkin REQUIRED COMPONENTS ...)
 ##   * add "message_runtime" and every package in MSG_DEP_SET to
-##     catkin_package(CATKIN_DEPENDS ...)
+catkin_package(
+  CATKIN_DEPENDS rospy std_srvs ros_car_msgs
+)
 ##   * uncomment the add_*_files sections below as needed
 ##     and list every .msg/.srv/.action file to be processed
 ##   * uncomment the generate_messages entry below
