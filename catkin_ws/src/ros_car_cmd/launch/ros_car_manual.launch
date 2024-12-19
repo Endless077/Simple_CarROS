@@ -3,14 +3,11 @@
   <include file="$(find ros_car_description)/launch/ros_car_gazebo.launch"/>
 
   <!-- Include the commons params -->
-  <include file="$(find ros_car_control)/launch/ros_car_bringup.launch"/>
+  <include file="$(find ros_car_cmd)/launch/ros_car_bringup.launch"/>
 
   <!-- Startup manual teleop mode -->
   <node pkg="ros_car_teleop" type="teleop_node.py" name="teleop_node" output="screen"/>
   <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_server"/>
-  
-  <!-- Startup odom publisher node -->
-  <node pkg="ros_car_cmd" type="odom_publisher.py" name="odom_publisher" output="screen" />
   
   <!-- Startup waypoint_manager and waypoint_visualizer for mange and visualize the waypoints -->
   <node pkg="ros_car_control" type="waypoint_manager.py" name="waypoint_manager" output="screen"/>

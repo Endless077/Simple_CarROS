@@ -1,10 +1,13 @@
 <launch>
+  <!-- Load the YAML world boundary file -->
+  <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml"/>
+
   <!-- Launch Gazebo GUI -->
   <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="true"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
-  <arg name="world_name" default="$(find ros_car_description)/worlds/custom_world.world"/>
+  <arg name="world_name" default="$(find ros_car_description)/worlds/custom_world.sdf"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(arg world_name)"/>

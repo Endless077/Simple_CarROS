@@ -3,6 +3,7 @@ import math
 import rospy
 import random
 from nav_msgs.msg import Odometry
+from ros_car_msgs.srv import WaypointService, WaypointServiceResponse
 
 ###################################################################################################
 
@@ -13,16 +14,12 @@ class WaypointManager:
     This node manages the robot's waypoints by monitoring its position through odometry data.
     When the robot reaches the current waypoint within a specified threshold, the node updates
     the last, current, and next waypoints. The next waypoint is randomly generated near the
-    current waypoint to enable continuous navigation.
+    current waypoint within the specified bounds of the world.
+    It also provides a service to get the next waypoint, requiring a secret key for access.
     """
     def __init__(self):
         """
         Initializes the WaypointManager.
-
-        - Reads initial waypoints (`current_waypoint`, `last_waypoint`, `next_waypoint`) from the ROS parameter server.
-        - Sets the distance threshold to determine if the robot has reached the current waypoint.
-        - Subscribes to the `/odom` topic to receive the robot's odometry data.
-        - Logs the start of the Waypoint Manager and the initial waypoints.
         """
         # Read initial waypoints from the parameter server
         self.current_waypoint = rospy.get_param('/current_waypoint', [0.0, 0.0])
@@ -32,8 +29,22 @@ class WaypointManager:
         # Distance threshold to determine if the robot has reached the current waypoint
         self.arrival_threshold = 0.2
 
+        # World bounds for waypoint generation loaded from parameter server
+        self.world_bounds = rospy.get_param('/world_bounds', {
+            'x_min': -5.0,
+            'x_max': 5.0,
+            'y_min': -5.0,
+            'y_max': 5.0
+        })
+
+        # Secret key for service access
+        self.secret_key = rospy.get_param('~secret_key', 'default_secret')
+
         # Subscriber to the /odom topic to monitor the robot's position
         self.odom_sub = rospy.Subscriber('/odom', Odometry, self.odom_callback)
+
+        # Service to get the next waypoint
+        self.waypoint_service = rospy.Service('/waypoint_service', WaypointService, self.handle_waypoint_request)
 
         rospy.loginfo("Waypoint Manager started.")
         rospy.loginfo("Current waypoint: %s", str(self.current_waypoint))
@@ -70,20 +81,42 @@ class WaypointManager:
             # Update the waypoints
             self.last_waypoint = self.current_waypoint
             self.current_waypoint = self.next_waypoint
-            
-            # Generate a new random waypoint near the current waypoint
-            # New waypoint is within +/- 2 meters range
-            rand_x = self.current_waypoint[0] + random.uniform(-2, 2)
-            rand_y = self.current_waypoint[1] + random.uniform(-2, 2)
+
+            # Generate a new random waypoint within the world bounds
+            rand_x = random.uniform(self.world_bounds['x_min'], self.world_bounds['x_max'])
+            rand_y = random.uniform(self.world_bounds['y_min'], self.world_bounds['y_max'])
             self.next_waypoint = [rand_x, rand_y]
 
             rospy.loginfo("New current waypoint: %s", str(self.current_waypoint))
-            rospy.loginfo("New next waypoint (random): %s", str(self.next_waypoint))
+            rospy.loginfo("New next waypoint: %s", str(self.next_waypoint))
 
             # Update the parameters on the parameter server
             rospy.set_param('/last_waypoint', self.last_waypoint)
             rospy.set_param('/current_waypoint', self.current_waypoint)
             rospy.set_param('/next_waypoint', self.next_waypoint)
+
+    def handle_waypoint_request(self, req):
+        """
+        Handles requests to the /get_next_waypoint service.
+
+        This service returns the current waypoint, last waypoint, and next waypoint.
+        It requires a valid secret key to process the request.
+
+        Args:
+            req: The service request containing the secret key.
+
+        Returns:
+            GetNextWaypointResponse: Contains last, current, and next waypoints if the key is valid.
+        """
+        if req.secret_key != self.secret_key:
+            rospy.logwarn("Invalid secret key provided: %s", req.secret_key)
+            raise rospy.ServiceException("Invalid secret key.")
+
+        response = WaypointService()
+        response.last_waypoint = self.last_waypoint
+        response.current_waypoint = self.current_waypoint
+        response.next_waypoint = self.next_waypoint
+        return response
 
 ###################################################################################################
 

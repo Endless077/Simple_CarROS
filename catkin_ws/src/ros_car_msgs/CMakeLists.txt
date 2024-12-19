@@ -8,8 +8,8 @@ project(ros_car_msgs)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
   std_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -55,8 +55,8 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  LimitSpeed.srv
   ResetPose.srv
+  WaypointService.srv
 )
 
 ## Generate actions in the 'action' folder

@@ -81,12 +81,6 @@ class WaypointNavigator:
         """
         Periodic control loop to navigate towards the current waypoint.
 
-        This method is called at regular intervals defined by the timer. It performs the following steps:
-        - Updates the current waypoint from the parameter server to allow dynamic changes.
-        - Calculates the distance and angle to the current waypoint.
-        - Determines whether to stop or adjust the robot's movement based on the distance and orientation.
-        - Publishes appropriate velocity commands to navigate the robot towards the waypoint.
-
         Args:
             event (rospy.timer.TimerEvent): Timer event information (unused).
         """

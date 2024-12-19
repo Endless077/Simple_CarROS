@@ -69,9 +69,9 @@ class WaypointVisualizer:
         marker.id = id_                         # Unique ID for the marker
         marker.type = Marker.SPHERE             # Shape of the marker
         marker.action = Marker.ADD              # Add or modify the marker
-        marker.scale.x = 0.3                    # Scale of the marker in x dimension
-        marker.scale.y = 0.3                    # Scale of the marker in y dimension
-        marker.scale.z = 0.3                    # Scale of the marker in z dimension
+        marker.scale.x = 0.1                    # Scale of the marker in x dimension
+        marker.scale.y = 0.1                    # Scale of the marker in y dimension
+        marker.scale.z = 0.1                    # Scale of the marker in z dimension
         marker.color.r = color[0]               # Red component of the color
         marker.color.g = color[1]               # Green component of the color
         marker.color.b = color[2]               # Blue component of the color

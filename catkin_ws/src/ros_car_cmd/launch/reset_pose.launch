@@ -1,9 +1,9 @@
 <launch>
-  <!-- Find the YAML parameter file -->
-  <param from="$(find ros_car_control)/config/start_params.yaml" command="load"/>
-  
+  <!-- Load the YAML parameter file -->
+  <rosparam file="$(find ros_car_cmd)/config/start_params.yaml"/>
+
   <!-- Startup the reset_pose_server node -->
-  <node pkg="ros_car_control" type="reset_pose_server.py" name="reset_pose_server" output="screen">
-    <param name="use_sim_time" value="true"/>
+  <node pkg="ros_car_cmd" type="reset_pose_service.py" name="reset_pose_service" output="screen">
+    <param name="reset_pose" value="true"/>
   </node>
 </launch>
