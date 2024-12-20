@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 from visualization_msgs.msg import Marker
+from ros_car_msgs.srv import WaypointService, WaypointServiceRequest
 
 ###################################################################################################
 
@@ -8,9 +9,8 @@ class WaypointVisualizer:
     """
     Waypoint Visualizer node for displaying robot waypoints in RViz.
 
-    This node publishes visualization markers for the last, current, and next waypoints
-    of the robot. It retrieves waypoint coordinates from the ROS parameter server and
-    updates the markers at a regular interval.
+    This node communicates with the Waypoint Manager service to retrieve waypoints
+    and publishes visualization markers for the last, current, and next waypoints.
     """
     def __init__(self):
         """
@@ -18,13 +18,19 @@ class WaypointVisualizer:
 
         - Sets up a publisher to the `/visualization_marker` topic for publishing Marker messages.
         - Initializes a timer to trigger the `timer_callback` method every second.
+        - Sets up a service proxy to communicate with the Waypoint Manager.
         - Logs the start of the Waypoint Visualizer.
         """
         # Publisher to the /visualization_marker topic
         self.pub = rospy.Publisher('/visualization_marker', Marker, queue_size=10)
+
+        # Service proxy to the Waypoint Manager
+        rospy.wait_for_service('/waypoint_request')
+        self.waypoint_request = rospy.ServiceProxy('/waypoint_request', WaypointService)
+
         # Timer to trigger updates every second
-        self.timer = rospy.Timer(rospy.Duration(1.0), self.timer_callback) 
-            
+        self.timer = rospy.Timer(rospy.Duration(1.0), self.timer_callback)
+
         rospy.loginfo("Waypoint Visualizer started.")
 
     def timer_callback(self, event):
@@ -32,21 +38,27 @@ class WaypointVisualizer:
         Timer callback to update and publish waypoint markers.
 
         This method is called periodically based on the timer interval.
-        It reads the latest waypoint coordinates from the ROS parameter server
+        It requests the latest waypoint coordinates from the Waypoint Manager service
         and publishes corresponding visualization markers for each waypoint.
 
         Args:
             event (rospy.timer.TimerEvent): Timer event information (unused).
         """
-        # Read the waypoints from the parameter server
-        last_wp = rospy.get_param('/last_waypoint', [0.0, 0.0])
-        current_wp = rospy.get_param('/current_waypoint', [0.0, 0.0])
-        next_wp = rospy.get_param('/next_waypoint', [0.0, 0.0])
+        try:
+            # Create a request object
+            req = WaypointServiceRequest()
+            req.secret_key = rospy.get_param('~secret_key', 'default_secret')
 
-        # Create and publish markers for each waypoint
-        self.publish_marker(last_wp, [1.0, 1.0, 0.0], "last_waypoint", 0)       # Yellow for last waypoint
-        self.publish_marker(current_wp, [0.0, 0.0, 1.0], "current_waypoint", 1) # Blue for current waypoint
-        self.publish_marker(next_wp, [1.0, 0.0, 0.0], "next_waypoint", 2)       # Red for next waypoint
+            # Call the service to get waypoints
+            response = self.waypoint_request(req)
+
+            # Create and publish markers for each waypoint
+            self.publish_marker(response.last_waypoint, [1.0, 1.0, 0.0], "last_waypoint", 0)       # Yellow for last waypoint
+            self.publish_marker(response.current_waypoint, [0.0, 0.0, 1.0], "current_waypoint", 1) # Blue for current waypoint
+            self.publish_marker(response.next_waypoint, [1.0, 0.0, 0.0], "next_waypoint", 2)       # Red for next waypoint
+
+        except rospy.ServiceException as e:
+            rospy.logerr("Failed to call Waypoint Manager service: %s", str(e))
 
     def publish_marker(self, wp, color, ns, id_):
         """

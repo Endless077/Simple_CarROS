@@ -2,12 +2,12 @@
 <robot name="ros_car" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- Local Params -->
+  <xacro:property name="chassis_height" value="0.05"/>
+  <xacro:property name="base_length" value="0.4"/>
+  <xacro:property name="base_width" value="0.2"/>
   <xacro:property name="wheel_radius" value="0.05"/>
   <xacro:property name="wheel_width" value="0.02"/>
   <xacro:property name="wheel_separation" value="0.3"/>
-  <xacro:property name="base_length" value="0.4"/>
-  <xacro:property name="base_width" value="0.2"/>
-  <xacro:property name="chassis_height" value="0.05"/>
 
   <!-- Materials -->
   <material name="black">
@@ -124,25 +124,31 @@
 
   <!-- Plugins -->
   <gazebo>
-    <plugin name="diff_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <ros>
-        <namespace>/</namespace>
-        <remapping>cmd_vel:=/cmd_vel</remapping>
-        <remapping>odom:=/odom</remapping>
-      </ros>
-      <commandTimeout>1.0</commandTimeout>
-      <wheelSeparation>${wheel_separation}</wheelSeparation>
-      <wheelDiameter>${2 * wheel_radius}</wheelDiameter>
-      <wheelAcceleration>0.0</wheelAcceleration>
-      <wheelTorque>5.0</wheelTorque>
-      <updateRate>50.0</updateRate>
-      <leftJoint>joint_wheel_left</leftJoint>
-      <rightJoint>joint_wheel_right</rightJoint>
-      <publishOdom>true</publishOdom>
-      <odomFrame>odom</odomFrame>
-      <odomTopic>odom</odomTopic>
-      <robotBaseFrame>base_link</robotBaseFrame>
-    </plugin>
+      <plugin name="diff_drive_controller" filename="libgazebo_ros_diff_drive.so">
+          <ros>
+              <namespace>/</namespace>
+              <remapping>odom:=/odom</remapping>
+              <remapping>cmd_vel:=/cmd_vel</remapping>
+          </ros>
+          <publishOdom>true</publishOdom>
+          <publishTf>true</publishTf>
+          <publishOdomTF>true</publishOdomTF>
+          <publishWheelTF>false</publishWheelTF>
+          <commandTimeout>1.0</commandTimeout>
+          <updateRate>50.0</updateRate>
+          <wheelTorque>5.0</wheelTorque>
+          <wheelAcceleration>0.0</wheelAcceleration>
+          <wheelDiameter>${2 * wheel_radius}</wheelDiameter>
+          <wheelSeparation>${wheel_separation}</wheelSeparation>
+          <robotBaseFrame>base_link</robotBaseFrame>
+          <odometryFrame>odom</odometryFrame>
+          <odometryTopic>odom</odometryTopic>
+          <commandTopic>cmd_vel</commandTopic>
+          <publishWheelJointState>true</publishWheelJointState>
+          <leftJoint>joint_wheel_left</leftJoint>
+          <rightJoint>joint_wheel_right</rightJoint>
+          <rosDebugLevel>INFO</rosDebugLevel>
+      </plugin>
   </gazebo>
 
 </robot>

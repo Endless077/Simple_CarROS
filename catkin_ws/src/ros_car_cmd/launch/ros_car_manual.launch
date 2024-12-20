@@ -1,18 +1,24 @@
 <launch>
   <!-- Include the Gazebo and Robot startup -->
-  <include file="$(find ros_car_description)/launch/ros_car_gazebo.launch"/>
+  <include file="$(find ros_car_description)/launch/custom_gazebo.launch"/>
 
   <!-- Include the commons params -->
   <include file="$(find ros_car_cmd)/launch/ros_car_bringup.launch"/>
 
-  <!-- Startup manual teleop mode -->
-  <node pkg="ros_car_teleop" type="teleop_node.py" name="teleop_node" output="screen"/>
-  <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_server"/>
-  
-  <!-- Startup waypoint_manager and waypoint_visualizer for mange and visualize the waypoints -->
-  <node pkg="ros_car_control" type="waypoint_manager.py" name="waypoint_manager" output="screen"/>
-  <node pkg="ros_car_control" type="waypoint_visualizer.py" name="waypoint_visualizer" output="screen"/>
+  <!-- Startup Waypoint Manager -->
+  <node pkg="ros_car_cmd" type="waypoint_manager.py" name="waypoint_manager" output="screen">
+    <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml"/>
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
+  </node>
 
-  <!-- Startup RViz with markers -->
-  <node pkg="rviz" type="rviz" name="rviz" output="screen"/>
+  <!-- Startup Waypoint Visualizer -->
+  <node pkg="ros_car_cmd" type="waypoint_visualizer.py" name="waypoint_visualizer" output="screen">
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
+  </node>
+  
+  <!-- Startup RViz -->
+  <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/default.rviz"/>
+
+  <!-- Startup ROS Bridge server (websocket) -->
+  <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_server"/>
 </launch>

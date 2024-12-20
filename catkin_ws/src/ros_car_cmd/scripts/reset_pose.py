@@ -18,6 +18,9 @@ class ResetPoseService:
     def __init__(self):
         """
         Initializes the ResetPoseServer.
+
+        Retrieves the initial position parameters from the ROS parameter server and sets up the
+        required ROS service and Gazebo service proxy.
         """
         # Retrieve the initial position parameters from the parameter server
         self.initial_x = rospy.get_param('/initial_x', 0.0)     # Default x position

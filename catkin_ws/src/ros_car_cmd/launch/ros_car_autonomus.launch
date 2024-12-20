@@ -5,15 +5,24 @@
   <!-- Include the commons params -->
   <include file="$(find ros_car_cmd)/launch/ros_car_bringup.launch"/>
 
-  <!-- Startup autonomus waypoint mode -->
+  <!-- Startup Waypoint Manager -->
   <node pkg="ros_car_cmd" type="waypoint_manager.py" name="waypoint_manager" output="screen">
-    <param name="~secret_key" value="ros_car_key" />
+    <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml"/>
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
   </node>
-  <node pkg="ros_car_cmd" type="waypoint_navigator.py" name="waypoint_navigator" output="screen"/>
-  <node pkg="ros_car_cmd" type="waypoint_visualizer.py" name="waypoint_visualizer" output="screen"/>
 
-  <!-- Startup RViz with markers -->
- <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/default.rviz"/>
+  <!-- Startup Waypoint Navigator -->
+  <node pkg="ros_car_cmd" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
+  </node>
+
+  <!-- Startup Waypoint Visualizer -->
+  <node pkg="ros_car_cmd" type="waypoint_visualizer.py" name="waypoint_visualizer" output="screen">
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
+  </node>
+
+  <!-- Startup RViz -->
+  <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/default.rviz"/>
 
   <!-- Startup ROS Bridge server (websocket) -->
   <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_server"/>
