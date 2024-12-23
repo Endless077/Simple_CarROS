@@ -1,8 +1,0 @@
-<launch>
-  <!-- Load the YAML parameters file -->
-  <rosparam file="$(find ros_car_cmd)/config/car_params.yaml"/>
-
-  <!-- Startup the teleop node -->
-  <node pkg="ros_car_teleop" type="teleop_node.py" name="teleop_node" output="screen"/>
-</launch>
-  

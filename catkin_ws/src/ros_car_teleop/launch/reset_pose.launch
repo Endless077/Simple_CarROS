@@ -1,9 +1,9 @@
 <launch>
   <!-- Load the YAML parameter file -->
-  <rosparam file="$(find ros_car_cmd)/config/start_params.yaml"/>
+  <rosparam file="$(find ros_car_teleop)/config/start_params.yaml"/>
 
   <!-- Startup the reset_pose_server node -->
-  <node pkg="ros_car_cmd" type="reset_pose.py" name="reset_pose" output="screen">
+  <node pkg="ros_car_teleop" type="reset_pose.py" name="reset_pose" output="screen">
     <param name="reset_pose" value="true"/>
   </node>
 </launch>

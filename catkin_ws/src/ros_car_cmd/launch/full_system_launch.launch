@@ -2,9 +2,6 @@
   <!-- Launch Gazebo simulation environment and the robot -->
   <include file="$(find ros_car_description)/launch/custom_gazebo.launch"/>
 
-  <!-- Load common parameters required for the robot -->
-  <include file="$(find ros_car_cmd)/launch/ros_car_bringup.launch"/>
-
   <!-- Argument to specify the operational mode (default is autonomous) -->
   <arg name="mode" default="autonomous"/>
 

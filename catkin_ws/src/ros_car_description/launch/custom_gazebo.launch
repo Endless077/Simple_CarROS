@@ -22,6 +22,8 @@
   
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
     <param name="use_sim_time" value="true"/>
+    <param name="use_tf_static" type="bool" value="true"/>
+    <param name="publish_frequency" type="double" value="50.0"/>
     <param name="robot_description" textfile="$(find ros_car_description)/urdf/ros_car.xacro"/>
   </node>
 

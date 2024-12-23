@@ -38,6 +38,32 @@
     </inertial>
   </link>
 
+  <!-- Scanner -->
+  <link name="laser_link">
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+               iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <joint name="joint_laser_link" type="fixed">
+    <parent link="base_link"/>
+    <child link="laser_link"/>
+    <origin xyz="0.2 0 0.05" rpy="0 0 0"/>
+  </joint>
+
   <!-- Left Wheel -->
   <link name="wheel_left">
     <visual>
@@ -60,12 +86,12 @@
     </inertial>
   </link>
 
-<joint name="joint_wheel_left" type="continuous">
-  <parent link="base_link"/>
-  <child link="wheel_left"/>
-  <origin xyz="${base_length/4} ${wheel_separation/3} -${chassis_height/2}" rpy="0 0 0"/>
-  <axis xyz="0 1 0"/>
-</joint>
+  <joint name="joint_wheel_left" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_left"/>
+    <origin xyz="${base_length/4} ${wheel_separation/3} -${chassis_height/2}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
 
   <!-- Right Wheel -->
   <link name="wheel_right">
@@ -123,32 +149,65 @@
   </joint>
 
   <!-- Plugins -->
-  <gazebo>
-      <plugin name="diff_drive_controller" filename="libgazebo_ros_diff_drive.so">
-          <ros>
-              <namespace>/</namespace>
-              <remapping>odom:=/odom</remapping>
-              <remapping>cmd_vel:=/cmd_vel</remapping>
-          </ros>
-          <publishOdom>true</publishOdom>
-          <publishTf>true</publishTf>
-          <publishOdomTF>true</publishOdomTF>
-          <publishWheelTF>false</publishWheelTF>
-          <commandTimeout>1.0</commandTimeout>
-          <updateRate>50.0</updateRate>
-          <wheelTorque>5.0</wheelTorque>
-          <wheelAcceleration>0.0</wheelAcceleration>
-          <wheelDiameter>${2 * wheel_radius}</wheelDiameter>
-          <wheelSeparation>${wheel_separation}</wheelSeparation>
-          <robotBaseFrame>base_link</robotBaseFrame>
-          <odometryFrame>odom</odometryFrame>
-          <odometryTopic>odom</odometryTopic>
-          <commandTopic>cmd_vel</commandTopic>
-          <publishWheelJointState>true</publishWheelJointState>
-          <leftJoint>joint_wheel_left</leftJoint>
-          <rightJoint>joint_wheel_right</rightJoint>
-          <rosDebugLevel>INFO</rosDebugLevel>
+  <gazebo reference="laser_link">						    <!-- Attach sensor to 'laser_link' -->
+    <sensor type="ray" name="laser_sensor">
+      <alwaysOn>true</alwaysOn>						      <!-- Keep sensor active -->
+      <update_rate>20</update_rate>					    <!-- Publish at 20 Hz -->
+      <visualize>true</visualize>						    <!-- Show beams in Gazebo -->
+      <topicName>scan</topicName>						    <!-- ROS topic for LaserScan -->
+      <pose>0 0 0 0 0 0</pose>						      <!-- Sensor pose relative to link -->
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>360</samples>					    <!-- Number of beams -->
+            <resolution>1</resolution>				  <!-- Subdivisions between beams -->
+            <min_angle>-1.5708</min_angle>			<!-- -90 degrees in radians -->
+            <max_angle>1.5708</max_angle>				<!-- +90 degrees in radians -->
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.12</min>						            <!-- Minimum detect distance (m) -->
+          <max>2.0</max>						            <!-- Maximum detect distance (m) -->
+          <resolution>0.01</resolution>				  <!-- Range resolution (m) -->
+        </range>
+        <noise>
+          <type>gaussian</type>					        <!-- Noise model type -->
+          <mean>0.0</mean>						          <!-- Mean of noise -->
+          <stddev>0.01</stddev>					        <!-- Standard deviation of noise -->
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_laser_controller" filename="libgazebo_ros_laser.so">
+        <topicName>scan</topicName>					    <!-- Same ROS topic name -->
+        <frameName>laser_link</frameName>				<!-- Laser data frame -->
       </plugin>
+    </sensor>
   </gazebo>
 
+  <gazebo>
+    <plugin name="diff_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <ros>
+        <namespace>/</namespace>					                      <!-- ROS namespace -->
+        <remapping>odom:=/odom</remapping>				              <!-- Remap /odom topic -->
+        <remapping>cmd_vel:=/cmd_vel</remapping>			          <!-- Remap /cmd_vel topic -->
+      </ros>
+      <publishOdom>true</publishOdom>					                  <!-- Publish odometry messages -->
+      <publishTf>true</publishTf>						                    <!-- Publish TF transforms -->
+      <publishOdomTF>true</publishOdomTF>				                <!-- Publish odom->base_link TF -->
+      <publishWheelTF>false</publishWheelTF>				            <!-- No wheel TF broadcast -->
+      <commandTimeout>1.0</commandTimeout>				              <!-- Stop if no cmd_vel after 1s -->
+      <updateRate>50.0</updateRate>					                    <!-- Plugin update frequency (Hz) -->
+      <wheelTorque>5.0</wheelTorque>					                  <!-- Max torque on wheels -->
+      <wheelAcceleration>0.0</wheelAcceleration>				        <!-- Max wheel acceleration (0=unlimited) -->
+      <wheelDiameter>${2 * wheel_radius}</wheelDiameter>			  <!-- Wheel diameter (m) -->
+      <wheelSeparation>${wheel_separation}</wheelSeparation>		<!-- Distance between wheels (m) -->
+      <robotBaseFrame>base_link</robotBaseFrame>				        <!-- Robot's main reference frame -->
+      <odometryFrame>odom</odometryFrame>					              <!-- Frame for odom data -->
+      <odometryTopic>odom</odometryTopic>					              <!-- Topic for odom data -->
+      <commandTopic>cmd_vel</commandTopic>					            <!-- Topic for velocity cmds -->
+      <publishWheelJointState>true</publishWheelJointState>			<!-- Publish wheel joint states -->
+      <leftJoint>joint_wheel_left</leftJoint>				            <!-- Name of the left joint -->
+      <rightJoint>joint_wheel_right</rightJoint>				        <!-- Name of the right joint -->
+      <rosDebugLevel>INFO</rosDebugLevel>					              <!-- Debug level -->
+    </plugin>
+  </gazebo>
 </robot>

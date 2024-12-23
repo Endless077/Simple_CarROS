@@ -12,7 +12,6 @@ class TeleopNode:
     A ROS node to handle teleoperation commands for a robot. It processes movement and speed 
     commands and publishes the appropriate Twist messages to control the robot.
     """
-
     def __init__(self):
         """
         Initializes the TeleopNode.

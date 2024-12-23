@@ -3,7 +3,7 @@
   <include file="$(find ros_car_description)/launch/custom_gazebo.launch"/>
 
   <!-- Include the commons params -->
-  <include file="$(find ros_car_cmd)/launch/ros_car_bringup.launch"/>
+  <node pkg="ros_car_teleop" type="teleop_node.py" name="teleop_node" output="screen"/>
 
   <!-- Startup Waypoint Manager -->
   <node pkg="ros_car_cmd" type="waypoint_manager.py" name="waypoint_manager" output="screen">
