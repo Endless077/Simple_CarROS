@@ -28,8 +28,8 @@ class TeleopNode:
         self.pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
 
         # Set default speed values initially
-        self.current_linear_speed = 0.5
-        self.current_angular_speed = 1.0
+        self.current_linear_speed = 0.0
+        self.current_angular_speed = 0.0
 
     def cmd_callback(self, msg):
         """

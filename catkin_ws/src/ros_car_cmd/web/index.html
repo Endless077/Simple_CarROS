@@ -1,124 +1,255 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Robot Control via Web</title>
-    <!-- Include roslib.min.js for ROS communication -->
     <script src="roslib.min.js"></script>
     <style>
         body {
+            align-items: center;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+            height: 100vh;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
         }
+
+        .buttons {
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 100px 100px 100px;
+            margin-top: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            max-width: 1200px;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .controls {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
         .control-button {
-            width: 100px;
+            background-color: #2196F3;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            cursor: pointer;
+            font-size: 24px;
             height: 100px;
+            transition: background-color 0.3s;
+            width: 100px;
+        }
+
+        .control-button:hover {
+            background-color: #1976D2;
+        }
+
+        .fast-button {
+            background-color: #FF5733;
+        }
+
+        footer {
+            background-color: #4CAF50;
+            bottom: 0;
+            color: white;
+            padding: 10px;
+            position: absolute;
+            text-align: center;
+            width: 100%;
+        }
+
+        .moderate-button {
+            background-color: #FFC300;
+            color: black;
+        }
+
+        h3 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        header {
+            background-color: #4CAF50;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .sidebar {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex: 1;
             margin: 10px;
+            padding: 20px;
+        }
+
+        .slow-button {
+            background-color: #28A745;
+        }
+
+        .speed-bar {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .speed-button {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            color: white;
+            cursor: pointer;
             font-size: 20px;
+            height: 70px;
+            margin: 0 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 110px;
         }
+
+        .speed-button:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1);
+        }
+
         #status {
-            margin-top: 20px;
+            color: #333;
             font-size: 18px;
-        }
-        #waypoints {
             margin-top: 20px;
-            font-size: 16px;
+            text-align: center;
         }
-        .lever {
-            margin-top: 30px;
-        }
-        .lever label {
-            margin-right: 15px;
-            font-size: 16px;
-        }
-        #velocities {
-            margin-top: 20px;
-            font-size: 18px;
+
+        #velocities, #waypoints {
+            margin-bottom: 20px;
         }
     </style>
 </head>
+
 <body>
-    <h1>Controls</h1>
-    
-    <!-- Full control buttons for robot movement -->
-    <div>
-        <button id="forward" class="control-button">↑</button><br>
-        <button id="left" class="control-button">←</button>
-        <button id="stop" class="control-button">■</button>
-        <button id="right" class="control-button">→</button><br>
-        <button id="backward" class="control-button">↓</button>
+    <header>
+        CarROS
+        <div style="font-size: 13px; font-weight: normal; color: #f4f4f9; margin-top: 5px;">
+            Robot Programming Project
+        </div>
+    </header>
+    <div class="container">
+        <!-- Left sidebar for velocities and waypoints -->
+        <div class="sidebar">
+            <div id="velocities">
+                <h3 style="font-family: 'Arial Black', Gadget, sans-serif; text-align: center;">Velocities</h3>
+                <div style="margin-bottom: 10px;">Linear Velocity: <span id="linear-velocity">0.00 m/s</span></div>
+                <div style="margin-bottom: 20px;">Angular Velocity: <span id="angular-velocity">0.00 rad/s</span></div>
+            </div>
+            <div id="waypoints">
+                <h3 style="font-family: 'Arial Black', Gadget, sans-serif; text-align: center;">Waypoints</h3>
+                <div style="margin-bottom: 10px;">Last: <span id="last-waypoint">[0, 0]</span></div>
+                <div style="margin-bottom: 10px;">Next: <span id="next-waypoint">[0, 0]</span></div>
+                <div style="margin-bottom: 20px;">Current: <span id="current-waypoint">[0, 0]</span></div>
+            </div>
+            <div id="current-position" style="margin-top: 20px;">
+                <h3 style="font-family: 'Arial Black', Gadget, sans-serif; text-align: center;">Current Position</h3>
+                <div>Coordinates: <span id="current-coordinates">[0, 0, 0]</span></div>
+            </div>
+        </div>
+
+        <!-- Central controls -->
+        <div class="controls">
+            <div class="buttons">
+                <div></div>
+                <button id="forward" class="control-button" onmousedown="adjustSpeed(0.1)"
+                    onmouseup="adjustSpeed(-0.1)">↑</button>
+                <div></div>
+                <button id="left" class="control-button" onmousedown="adjustSpeed(0.05, 'angular')"
+                    onmouseup="adjustSpeed(-0.05, 'angular')">←</button>
+                <button id="stop" class="control-button">■</button>
+                <button id="right" class="control-button" onmousedown="adjustSpeed(-0.05, 'angular')"
+                    onmouseup="adjustSpeed(0.05, 'angular')">→</button>
+                <div></div>
+                <button id="backward" class="control-button" onmousedown="adjustSpeed(-0.1)"
+                    onmouseup="adjustSpeed(0.1)">↓</button>
+                <div></div>
+            </div>
+
+            <!-- Speed Bar -->
+            <div class="speed-bar">
+                <button id="fast" class="speed-button fast-button" onclick="setPresetSpeed('fast')">Fast</button>
+                <button id="moderate" class="speed-button moderate-button"
+                    onclick="setPresetSpeed('moderate')">Moderate</button>
+                <button id="slow" class="speed-button slow-button" onclick="setPresetSpeed('slow')">Slow</button>
+            </div>
+        </div>
+
+        <!-- Right sidebar for tutorial -->
+        <div class="sidebar">
+            <h3 style="font-family: 'Arial Black', Gadget, sans-serif; text-align: center;">Tutorial</h3>
+            <div id="status">
+                <span id="robot-status">Inactive</span>
+            </div>
+            <div style="font-size: 14px; line-height: 1.6; margin-top: 10px;">
+                <p>Control the robot's speed using directional keys or buttons:</p>
+                <ul style="padding-left: 20px;">
+                    <li>Arrow keys dynamically set the current linear or angular speed.</li>
+                    <li>The <strong>STOP</strong> button resets the current speed to <strong>0.0 m/s</strong>.</li>
+                    <li>Preset buttons (<strong>Fast</strong>, <strong>Moderate</strong>, <strong>Slow</strong>) set the
+                        linear speed to predefined default values.</li>
+                </ul>
+                <p>All speed updates are sent to the ROS backend for execution in real-time.</p>
+            </div>
+        </div>>
     </div>
-    
-    <!-- Display the robot's connection status -->
-    <div id="status">
-        Robot Status: <span id="robot-status">Inactive</span>
-    </div>
-    
-    <!-- Display the robot's current velocities -->
-    <div id="velocities">
-        <h3>Robot Velocities</h3>
-        Linear Velocity: <span id="linear-velocity">0.00 m/s</span><br>
-        Angular Velocity: <span id="angular-velocity">0.00 rad/s</span>
-    </div>
-    
-    <!-- Display the robot's waypoints -->
-    <div id="waypoints">
-        <h3>Waypoints</h3>
-        Last: <span id="last-waypoint">[0, 0]</span><br>
-        Current: <span id="current-waypoint">[0, 0]</span><br>
-        Next: <span id="next-waypoint">[0, 0]</span>
-    </div>
-    
-    <!-- Speed selection lever -->
-    <div class="lever">
-        <h3>Select Speed</h3>
-        <label>
-            <input type="radio" name="speed" value="slow"> Slow
-        </label>
-        <label>
-            <input type="radio" name="speed" value="moderate" checked> Moderate
-        </label>
-        <label>
-            <input type="radio" name="speed" value="fast"> Fast
-        </label>
-    </div>
-    
+
     <script>
         // Connect to rosbridge
         var ros = new ROSLIB.Ros({
-            url : 'ws://localhost:9090'
+            url: 'ws://localhost:9090'
         });
 
         // Handle connection to rosbridge
-        ros.on('connection', function() {
+        ros.on('connection', function () {
             console.log('Connected to rosbridge!');
             document.getElementById('robot-status').innerHTML = 'Connected';
         });
 
         // Handle connection error
-        ros.on('error', function(error) {
+        ros.on('error', function (error) {
             console.log('Error connecting to rosbridge:', error);
             document.getElementById('robot-status').innerHTML = 'Connection Error';
         });
 
         // Handle disconnection
-        ros.on('close', function() {
+        ros.on('close', function () {
             console.log('Connection to rosbridge closed.');
             document.getElementById('robot-status').innerHTML = 'Connection Closed';
         });
 
         // Publisher for /teleop_cmd topic
         var cmdPub = new ROSLIB.Topic({
-            ros : ros,
-            name : '/teleop_cmd',
-            messageType : 'ros_car_msgs/MoveControls'
+            ros: ros,
+            name: '/teleop_cmd',
+            messageType: 'ros_car_msgs/MoveControls'
         });
 
         // Publisher for /set_speed topic
         var speedPub = new ROSLIB.Topic({
-            ros : ros,
-            name : '/set_speed',
-            messageType : 'ros_car_msgs/SpeedControls'
+            ros: ros,
+            name: '/set_speed',
+            messageType: 'ros_car_msgs/SpeedControls'
         });
 
         // Function to send movement commands
@@ -138,61 +269,57 @@
             speedPub.publish(speedMsg);
         }
 
+        function setPresetSpeed(preset) {
+            switch (preset) {
+                case 'fast':
+                    setSpeed(1.0, 2.0); // Fast speed
+                    break
+                case 'moderate':
+                    setSpeed(0.5, 1.0); // Moderate speed
+                    break;
+                case 'slow':
+                    setSpeed(0.2, 0.5); // Slow speed
+                    break;
+                    break;
+                default:
+                    setSpeed(0.0, 0.0); // Default to moderate
+            }
+            console.log('Speed preset set to:', preset);
+        }
+
         // Attach event listeners to control buttons
-        document.getElementById('forward').addEventListener('click', function() {
-            sendCommand(1); // FORWARD
+        document.getElementById('forward').addEventListener('click', function () {
+            sendCommand(1);     // FORWARD
         });
 
-        document.getElementById('backward').addEventListener('click', function() {
-            sendCommand(2); // BACKWARD
+        document.getElementById('backward').addEventListener('click', function () {
+            sendCommand(2);     // BACKWARD
         });
 
-        document.getElementById('left').addEventListener('click', function() {
-            sendCommand(3); // LEFT
+        document.getElementById('left').addEventListener('click', function () {
+            sendCommand(3);     // LEFT
         });
 
-        document.getElementById('right').addEventListener('click', function() {
-            sendCommand(4); // RIGHT
+        document.getElementById('right').addEventListener('click', function () {
+            sendCommand(4);     // RIGHT
         });
 
-        document.getElementById('stop').addEventListener('click', function() {
-            sendCommand(5); // STOP
+        document.getElementById('stop').addEventListener('click', function () {
+            sendCommand(0);     // STOP
+            setSpeed(0.0, 0.0);
         });
 
         // Set default speed values
-        setSpeed(0.5, 1.0);
-
-        // Handle speed selection changes
-        var speedRadios = document.getElementsByName('speed');
-        speedRadios.forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    switch(this.value) {
-                        case 'slow':
-                            setSpeed(0.2, 0.5); // Slow speed
-                            break;
-                        case 'moderate':
-                            setSpeed(0.5, 1.0); // Moderate speed
-                            break;
-                        case 'fast':
-                            setSpeed(1.0, 2.0); // Fast speed
-                            break;
-                        default:
-                            setSpeed(0.5, 1.0); // Default to moderate
-                    }
-                    console.log('Speed set to: ' + this.value);
-                }
-            });
-        });
+        setSpeed(0.0, 0.0);
 
         // Subscriber for robot velocities
         var velocitySub = new ROSLIB.Topic({
-            ros : ros,
-            name : '/odom',
-            messageType : 'nav_msgs/Odometry'
+            ros: ros,
+            name: '/odom',
+            messageType: 'nav_msgs/Odometry'
         });
 
-        velocitySub.subscribe(function(message) {
+        velocitySub.subscribe(function (message) {
             // Extract linear and angular velocities from the message   
             var linear = message.twist.twist.linear;
             var angular = message.twist.twist.angular;
@@ -204,35 +331,43 @@
 
         // Subscriber for updated waypoints
         var waypointSub = new ROSLIB.Topic({
-            ros : ros,
-            name : '/current_waypoint',
-            messageType : 'geometry_msgs/Point'
+            ros: ros,
+            name: '/current_waypoint',
+            messageType: 'geometry_msgs/Point'
         });
 
         var lastWaypointSub = new ROSLIB.Topic({
-            ros : ros,
-            name : '/last_waypoint',
-            messageType : 'geometry_msgs/Point'
+            ros: ros,
+            name: '/last_waypoint',
+            messageType: 'geometry_msgs/Point'
         });
 
         var nextWaypointSub = new ROSLIB.Topic({
-            ros : ros,
-            name : '/next_waypoint',
-            messageType : 'geometry_msgs/Point'
+            ros: ros,
+            name: '/next_waypoint',
+            messageType: 'geometry_msgs/Point'
         });
-        
+
         // Update waypoints on subscription
-        lastWaypointSub.subscribe(function(message) {
+        lastWaypointSub.subscribe(function (message) {
             document.getElementById('last-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
         });
 
-        waypointSub.subscribe(function(message) {
+        waypointSub.subscribe(function (message) {
             document.getElementById('current-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
         });
 
-        nextWaypointSub.subscribe(function(message) {
+        nextWaypointSub.subscribe(function (message) {
             document.getElementById('next-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
         });
     </script>
+
+    <footer
+        style="width: 100%; text-align: center; margin-top: 20px; background-color: #4CAF50; color: white; padding: 10px; position: absolute; bottom: 0;">
+        ⚡ made by by <a href="https://github.com" target="_blank"
+            style="color: white; text-decoration: underline;">Antonio Garofalo</a> ⚡ <br> &bull; All Rights Reserved
+        &bull;
+    </footer>
 </body>
+
 </html>

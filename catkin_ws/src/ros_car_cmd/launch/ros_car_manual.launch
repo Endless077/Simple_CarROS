@@ -20,5 +20,5 @@
   <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/default.rviz"/>
 
   <!-- Startup ROS Bridge server (websocket) -->
-  <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_server"/>
+  <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen"/>
 </launch>
