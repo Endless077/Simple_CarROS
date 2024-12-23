@@ -149,7 +149,7 @@
   </joint>
 
   <!-- Plugins -->
-  <gazebo reference="laser_link">						    <!-- Attach sensor to 'laser_link' -->
+  <gazebo reference="laser_link">
     <sensor type="ray" name="laser_sensor">
       <alwaysOn>true</alwaysOn>						      <!-- Keep sensor active -->
       <update_rate>20</update_rate>					    <!-- Publish at 20 Hz -->
@@ -161,8 +161,8 @@
           <horizontal>
             <samples>360</samples>					    <!-- Number of beams -->
             <resolution>1</resolution>				  <!-- Subdivisions between beams -->
-            <min_angle>-1.5708</min_angle>			<!-- -90 degrees in radians -->
-            <max_angle>1.5708</max_angle>				<!-- +90 degrees in radians -->
+            <min_angle>-3.1416</min_angle>      <!-- -180 gradi in radianti -->
+            <max_angle>3.1416</max_angle>       <!-- +180 gradi in radianti -->
           </horizontal>
         </scan>
         <range>

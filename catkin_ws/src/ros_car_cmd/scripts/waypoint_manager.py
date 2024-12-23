@@ -37,7 +37,7 @@ class WaypointManager:
         })
 
         # Secret key for service access
-        self.secret_key = rospy.get_param('/secret_key', 'default_secret')
+        self.secret_key = rospy.get_param('~secret_key', 'default')
 
         # Arrival threshold to determine if the waypoint has been reached
         self.arrival_threshold = rospy.get_param('/arrival_threshold', 0.2)

@@ -1,34 +1,22 @@
 <launch>
-  <!-- Include the Gazebo and Robot startup -->
+  <!-- Launch the Gazebo and Robot statup -->
   <include file="$(find ros_car_description)/launch/custom_gazebo.launch"/>
-
-  <node pkg="move_base" type="move_base" name="move_base" output="screen">
-    <!-- Planner config -->
-    <param name="base_global_planner" value="navfn/NavfnROS"/>
-    <param name="base_local_planner"  value="dwa_local_planner/DWAPlannerROS"/>
-    
-    <!-- Carichiamo i parametri dal file di config -->
-    <rosparam file="$(find ros_car_cmd)/config/costmap_common_params.yaml" command="load"/>
-    <rosparam file="$(find ros_car_cmd)/config/global_costmap_params.yaml" command="load"/>
-    <rosparam file="$(find ros_car_cmd)/config/local_costmap_params.yaml" command="load"/>
-    <rosparam file="$(find ros_car_cmd)/config/dwa_local_planner.yaml" command="load"/>
-  </node>
 
   <!-- Startup Waypoint Manager -->
   <node pkg="ros_car_cmd" type="waypoint_manager.py" name="waypoint_manager" output="screen">
-    <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml"/>
-    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
+    <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml" command="load"/>
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml" command="load"/>
   </node>
 
   <!-- Startup Waypoint Navigator -->
   <node pkg="ros_car_cmd" type="waypoint_navigator.py" name="waypoint_navigator" output="screen">
-    <rosparam file="$(find ros_car_cmd)/config/car_params.yaml"/>
-    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
+    <rosparam file="$(find ros_car_cmd)/config/car_params.yaml" command="load"/>
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml" command="load"/>
   </node>
 
   <!-- Startup Waypoint Visualizer -->
   <node pkg="ros_car_cmd" type="waypoint_visualizer.py" name="waypoint_visualizer" output="screen">
-    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml"/>
+    <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml" command="load"/>
   </node>
 
   <!-- Startup RViz -->

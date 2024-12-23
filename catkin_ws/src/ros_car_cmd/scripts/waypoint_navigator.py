@@ -15,7 +15,6 @@ class WaypointNavigator:
     and autonomously navigates towards them. If an obstacle is detected in front,
     the robot stops and rotates to avoid it before continuing.
     """
-
     def __init__(self):
         """
         Initializes the WaypointNavigator node with parameters from the ROS parameter server.
@@ -127,7 +126,7 @@ class WaypointNavigator:
         """
         try:
             req = WaypointServiceRequest()
-            req.secret_key = rospy.get_param('~secret_key', 'default_secret')
+            req.secret_key = rospy.get_param('~secret_key', 'default')
             response = self.waypoint_request(req)
             self.current_waypoint = response.current_waypoint
             rospy.loginfo("New waypoint received: %s", self.current_waypoint)

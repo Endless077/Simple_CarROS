@@ -1,7 +1,7 @@
 # Linear and Angular speed
-~linear_speed: 0.3
-~angular_speed: 1.0
+linear_speed: 0.7
+angular_speed: 1.0
 
 # Scanner params
-~front_angle_width: 20
-~obstacle_threshold: 0.4
+front_angle_width: 25
+obstacle_threshold: 0.7 

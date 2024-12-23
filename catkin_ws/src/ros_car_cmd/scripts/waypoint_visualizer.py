@@ -47,7 +47,7 @@ class WaypointVisualizer:
         try:
             # Create a request object
             req = WaypointServiceRequest()
-            req.secret_key = rospy.get_param('~secret_key', 'default_secret')
+            req.secret_key = rospy.get_param('~secret_key', 'default')
 
             # Call the service to get waypoints
             response = self.waypoint_request(req)
