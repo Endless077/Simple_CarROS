@@ -134,13 +134,19 @@ if __name__ == '__main__':
     - Creates an instance of the WaypointManager class.
     - Keeps the node running to process callbacks.
     """
-    # Initialize the ROS node with the name 'waypoint_manager'
-    rospy.init_node('waypoint_manager')
+    try:
+        # Initialize the ROS node with the name 'waypoint_manager'
+        rospy.init_node('waypoint_manager')
 
-    # Create an instance of the WaypointManager class
-    manager = WaypointManager()
+        # Create an instance of the WaypointManager class
+        manager = WaypointManager()
 
-    # Keep the node running to process callbacks
-    rospy.spin()
+        # Keep the node running to process callbacks
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("WaypointManager node interrupted.")
+    except Exception as e:
+        rospy.logerr(f"An unexpected error occurred: {e}")
+
 
 ###################################################################################################

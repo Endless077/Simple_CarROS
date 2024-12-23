@@ -90,6 +90,7 @@
     <parent link="base_link"/>
     <child link="wheel_left"/>
     <origin xyz="${base_length/4} ${wheel_separation/3} -${chassis_height/2}" rpy="0 0 0"/>
+    <dynamics damping="0.1" friction="0.1"/>
     <axis xyz="0 1 0"/>
   </joint>
 
@@ -119,6 +120,7 @@
     <parent link="base_link"/>
     <child link="wheel_right"/>
     <origin xyz="${base_length/4} -${wheel_separation/3} -${chassis_height/2}" rpy="0 0 0"/>
+    <dynamics damping="0.1" friction="0.1"/>
     <axis xyz="0 1 0"/>
   </joint>
 
@@ -161,8 +163,8 @@
           <horizontal>
             <samples>360</samples>					    <!-- Number of beams -->
             <resolution>1</resolution>				  <!-- Subdivisions between beams -->
-            <min_angle>-3.1416</min_angle>      <!-- -180 gradi in radianti -->
-            <max_angle>3.1416</max_angle>       <!-- +180 gradi in radianti -->
+            <min_angle>-3.1416</min_angle>      <!-- -180° rads -->
+            <max_angle>3.1416</max_angle>       <!-- +180° rads -->
           </horizontal>
         </scan>
         <range>
@@ -195,7 +197,7 @@
       <publishOdomTF>true</publishOdomTF>				                <!-- Publish odom->base_link TF -->
       <publishWheelTF>false</publishWheelTF>				            <!-- No wheel TF broadcast -->
       <commandTimeout>1.0</commandTimeout>				              <!-- Stop if no cmd_vel after 1s -->
-      <updateRate>50.0</updateRate>					                    <!-- Plugin update frequency (Hz) -->
+      <updateRate>100</updateRate>					                    <!-- Plugin update frequency (Hz) -->
       <wheelTorque>5.0</wheelTorque>					                  <!-- Max torque on wheels -->
       <wheelAcceleration>0.0</wheelAcceleration>				        <!-- Max wheel acceleration (0=unlimited) -->
       <wheelDiameter>${2 * wheel_radius}</wheelDiameter>			  <!-- Wheel diameter (m) -->

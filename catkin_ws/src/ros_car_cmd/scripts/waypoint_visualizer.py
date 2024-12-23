@@ -106,13 +106,18 @@ if __name__ == '__main__':
     - Creates an instance of the WaypointVisualizer class.
     - Keeps the node running to process callbacks.
     """
-    # Initialize the ROS node with the name 'waypoint_visualizer'
-    rospy.init_node('waypoint_visualizer')
+    try:
+        # Initialize the ROS node with the name 'waypoint_visualizer'
+        rospy.init_node('waypoint_visualizer')
 
-    # Create an instance of the WaypointVisualizer class
-    viz = WaypointVisualizer()
+        # Create an instance of the WaypointVisualizer class
+        viz = WaypointVisualizer()
 
-    # Keep the node running to process callbacks
-    rospy.spin()
+        # Keep the node running to process callbacks
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("WaypointVisualizer node interrupted.")
+    except Exception as e:
+        rospy.logerr(f"An unexpected error occurred: {e}")
 
 ###################################################################################################
