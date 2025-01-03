@@ -2,8 +2,9 @@
 <html>
 
 <head>
-    <title>Robot Control via Web</title>
+    <title>CarROS</title>
     <script src="roslib.min.js"></script>
+    <link rel="icon" href="icon/icon.png" type="image/png" />
     <style>
         body {
             align-items: center;
@@ -51,12 +52,27 @@
             width: 100px;
         }
 
+        .control-button:active {
+            background-color: #3277bb;
+            transform: scale(0.95);
+        }
+        
         .control-button:hover {
             background-color: #1976D2;
         }
 
         .fast-button {
             background-color: #FF5733;
+        }
+
+        .fast-button:active {
+            background-color: #b04a33;
+            transform: scale(0.95);
+        }
+
+        .fast-button:active {
+            transform: scale(0.95); 
+            background-color: #E74C3C;
         }
 
         footer {
@@ -71,7 +87,11 @@
 
         .moderate-button {
             background-color: #FFC300;
-            color: black;
+        }
+
+        .moderate-button:active {
+            transform: scale(0.95);
+            background-color: #DAA520;
         }
 
         h3 {
@@ -102,6 +122,11 @@
 
         .slow-button {
             background-color: #28A745;
+        }
+
+        .slow-button:active {
+            transform: scale(0.95);
+            background-color: #218838;
         }
 
         .speed-bar {
@@ -173,16 +198,16 @@
             <div class="buttons">
                 <div></div>
                 <button id="forward" class="control-button" onmousedown="adjustSpeed(0.1)"
-                    onmouseup="adjustSpeed(-0.1)">↑</button>
+                    onmouseup="adjustSpeed(-0.1)">&#8593;</button>
                 <div></div>
                 <button id="left" class="control-button" onmousedown="adjustSpeed(0.05, 'angular')"
-                    onmouseup="adjustSpeed(-0.05, 'angular')">←</button>
-                <button id="stop" class="control-button">■</button>
+                    onmouseup="adjustSpeed(-0.05, 'angular')">&#8592;</button>
+                <button id="stop" class="control-button">&#9632;</button>
                 <button id="right" class="control-button" onmousedown="adjustSpeed(-0.05, 'angular')"
-                    onmouseup="adjustSpeed(0.05, 'angular')">→</button>
+                    onmouseup="adjustSpeed(0.05, 'angular')">&#8594;</button>
                 <div></div>
                 <button id="backward" class="control-button" onmousedown="adjustSpeed(-0.1)"
-                    onmouseup="adjustSpeed(0.1)">↓</button>
+                    onmouseup="adjustSpeed(0.1)">&#8595;</button>
                 <div></div>
             </div>
 
@@ -211,46 +236,42 @@
                 </ul>
                 <p>All speed updates are sent to the ROS backend for execution in real-time.</p>
             </div>
-        </div>>
+        </div>
     </div>
 
     <script>
-        // Connect to rosbridge
+        // ************************************************************************************* //
+
+        // Init Robot ROS connection
         var ros = new ROSLIB.Ros({
-            url: 'ws://localhost:9090'
+            url: 'ws://192.168.1.212:9090'
         });
 
         // Handle connection to rosbridge
         ros.on('connection', function () {
             console.log('Connected to rosbridge!');
-            document.getElementById('robot-status').innerHTML = 'Connected';
+            let statusElement = document.getElementById('robot-status');
+            statusElement.innerHTML = 'Connected';
+            statusElement.style.color = 'green';
         });
 
         // Handle connection error
         ros.on('error', function (error) {
             console.log('Error connecting to rosbridge:', error);
-            document.getElementById('robot-status').innerHTML = 'Connection Error';
+            let statusElement = document.getElementById('robot-status');
+            statusElement.innerHTML = 'Connection Error';
+            statusElement.style.color = 'red';
         });
 
         // Handle disconnection
         ros.on('close', function () {
             console.log('Connection to rosbridge closed.');
-            document.getElementById('robot-status').innerHTML = 'Connection Closed';
+            let statusElement = document.getElementById('robot-status');
+            statusElement.innerHTML = 'Connection Closed';
+            statusElement.style.color = 'black';
         });
 
-        // Publisher for /teleop_cmd topic
-        var cmdPub = new ROSLIB.Topic({
-            ros: ros,
-            name: '/teleop_cmd',
-            messageType: 'ros_car_msgs/MoveControls'
-        });
-
-        // Publisher for /set_speed topic
-        var speedPub = new ROSLIB.Topic({
-            ros: ros,
-            name: '/set_speed',
-            messageType: 'ros_car_msgs/SpeedControls'
-        });
+        // ************************************************************************************* //
 
         // Function to send movement commands
         function sendCommand(command) {
@@ -260,32 +281,12 @@
             cmdPub.publish(cmdMsg);
         }
 
-        // Function to set robot speed
-        function setSpeed(linear, angular) {
-            var speedMsg = new ROSLIB.Message({
-                linear_speed: linear,
-                angular_speed: angular
-            });
-            speedPub.publish(speedMsg);
-        }
-
-        function setPresetSpeed(preset) {
-            switch (preset) {
-                case 'fast':
-                    setSpeed(1.0, 2.0); // Fast speed
-                    break
-                case 'moderate':
-                    setSpeed(0.5, 1.0); // Moderate speed
-                    break;
-                case 'slow':
-                    setSpeed(0.2, 0.5); // Slow speed
-                    break;
-                    break;
-                default:
-                    setSpeed(0.0, 0.0); // Default to moderate
-            }
-            console.log('Speed preset set to:', preset);
-        }
+        // Publisher for /teleop_cmd topic
+        var cmdPub = new ROSLIB.Topic({
+            ros: ros,
+            name: '/teleop_cmd',
+            messageType: 'ros_car_msgs/MoveControls'
+        });
 
         // Attach event listeners to control buttons
         document.getElementById('forward').addEventListener('click', function () {
@@ -306,68 +307,151 @@
 
         document.getElementById('stop').addEventListener('click', function () {
             sendCommand(0);     // STOP
-            setSpeed(0.0, 0.0);
         });
+
+
+        // ************************************************************************************* //
+
+        // Function to set robot speed
+        function setSpeed(linear, angular) {
+            var speedMsg = new ROSLIB.Message({
+                linear_speed: linear,
+                angular_speed: angular
+            });
+            speedPub.publish(speedMsg);
+        }
+
+        // Publisher for /set_speed topic
+        var speedPub = new ROSLIB.Topic({
+            ros: ros,
+            name: '/set_speed',
+            messageType: 'ros_car_msgs/SpeedControls'
+        });
+
+        // Set Preset Speed event
+        function setPresetSpeed(preset) {
+            switch (preset) {
+                case 'fast':
+                    setSpeed(1.0, 2.0); // Fast speed
+                    break
+                case 'moderate':
+                    setSpeed(0.5, 1.0); // Moderate speed
+                    break;
+                case 'slow':
+                    setSpeed(0.2, 0.5); // Slow speed
+                    break;
+                default:
+                    setSpeed(0.0, 0.0); // Default
+            }
+            console.log('Speed preset set to:', preset);
+        }
 
         // Set default speed values
         setSpeed(0.0, 0.0);
 
-        // Subscriber for robot velocities
-        var velocitySub = new ROSLIB.Topic({
+        // ************************************************************************************* //
+
+        // Subscriber for robot odometry
+        var odometrySub = new ROSLIB.Topic({
             ros: ros,
             name: '/odom',
             messageType: 'nav_msgs/Odometry'
         });
 
-        velocitySub.subscribe(function (message) {
-            // Extract linear and angular velocities from the message   
-            var linear = message.twist.twist.linear;
-            var angular = message.twist.twist.angular;
+        let lastLinearVelStr = null;
+        let lastAngularVelStr = null;
+        let lastPositionStr   = null;
 
-            // Update HTML elements with the velocities
-            document.getElementById('linear-velocity').innerHTML = linear.x.toFixed(2) + ' m/s';
-            document.getElementById('angular-velocity').innerHTML = angular.z.toFixed(2) + ' rad/s';
+        // Subscribe to the odometry topic
+        odometrySub.subscribe(function (message) {
+            // Velocity
+            let rawLin = message.twist.twist.linear.x;
+            let rawAng = message.twist.twist.angular.z;
+
+            // If these values are very close to zero, force them to 0.0 to avoid "-0.0"
+            if (Math.abs(rawLin) < 0.0001) rawLin = 0.0;
+            if (Math.abs(rawAng) < 0.0001) rawAng = 0.0;
+
+            // Create formatted strings for linear and angular velocities
+            let linStr = rawLin.toFixed(2) + ' m/s';
+            let angStr = rawAng.toFixed(2) + ' rad/s';
+
+            // Update the HTML elements only if the values have actually changed
+            if (linStr !== lastLinearVelStr) {
+                document.getElementById('linear-velocity').innerHTML = linStr;
+                lastLinearVelStr = linStr;
+            }
+            if (angStr !== lastAngularVelStr) {
+                document.getElementById('angular-velocity').innerHTML = angStr;
+                lastAngularVelStr = angStr;
+            }
+
+            // Pose
+            let posX = message.pose.pose.position.x;
+            let posY = message.pose.pose.position.y;
+            let posZ = message.pose.pose.position.z;
+
+            // Format the position with two decimal places
+            let positionStr = `[${posX.toFixed(2)}, ${posY.toFixed(2)}, ${posZ.toFixed(2)}]`;
+
+            // Update the HTML element only if the value has changed
+            if (positionStr !== lastPositionStr) {
+                document.getElementById('current-coordinates').innerHTML = positionStr;
+                lastPositionStr = positionStr;
+            }
         });
 
-        // Subscriber for updated waypoints
-        var waypointSub = new ROSLIB.Topic({
+        // ************************************************************************************* //
+
+        // Create the Service object
+        var waypointService = new ROSLIB.Service({
             ros: ros,
-            name: '/current_waypoint',
-            messageType: 'geometry_msgs/Point'
+            name: '/waypoint_request',
+            serviceType: 'ros_car_cmd/WaypointService'
         });
 
-        var lastWaypointSub = new ROSLIB.Topic({
-            ros: ros,
-            name: '/last_waypoint',
-            messageType: 'geometry_msgs/Point'
-        });
+        // Call the service and update the UI
+        function updateWaypoints() {
+            // The secret key must match the secretKey.yaml parameter
+            var request = new ROSLIB.ServiceRequest({
+                secret_key: "ros_car_key"
+            });
 
-        var nextWaypointSub = new ROSLIB.Topic({
-            ros: ros,
-            name: '/next_waypoint',
-            messageType: 'geometry_msgs/Point'
-        });
+            // Make the service call
+            waypointService.callService(request, function(response) {
+                // response.last_waypoint
+                // response.current_waypoint
+                // response.next_waypoint
+                
+                let lastX = response.last_waypoint[0].toFixed(2);
+                let lastY = response.last_waypoint[1].toFixed(2);
 
-        // Update waypoints on subscription
-        lastWaypointSub.subscribe(function (message) {
-            document.getElementById('last-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
-        });
+                let currentX = response.current_waypoint[0].toFixed(2);
+                let currentY = response.current_waypoint[1].toFixed(2);
 
-        waypointSub.subscribe(function (message) {
-            document.getElementById('current-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
-        });
+                let nextX = response.next_waypoint[0].toFixed(2);
+                let nextY = response.next_waypoint[1].toFixed(2);
 
-        nextWaypointSub.subscribe(function (message) {
-            document.getElementById('next-waypoint').innerHTML = '[' + message.x.toFixed(2) + ', ' + message.y.toFixed(2) + ']';
-        });
+                // Update the HTML (or handle the data as needed)
+                document.getElementById('last-waypoint').innerHTML = `[${lastX}, ${lastY}]`;
+                document.getElementById('current-waypoint').innerHTML = `[${currentX}, ${currentY}]`;
+                document.getElementById('next-waypoint').innerHTML = `[${nextX}, ${nextY}]`;
+            });
+        }
+
+        // Call the update function periodically for continuous updates
+        setInterval(updateWaypoints, 3000);
+
+        // ************************************************************************************* //
     </script>
 
     <footer
         style="width: 100%; text-align: center; margin-top: 20px; background-color: #4CAF50; color: white; padding: 10px; position: absolute; bottom: 0;">
-        ⚡ made by by <a href="https://github.com" target="_blank"
-            style="color: white; text-decoration: underline;">Antonio Garofalo</a> ⚡ <br> &bull; All Rights Reserved
+        &#9889; made by <a href="https://github.com/Endless077" target="_blank"
+            style="color: white; text-decoration: underline;">Antonio Garofalo</a> &#9889; <br> &bull; All Rights Reserved
         &bull;
     </footer>
+
 </body>
 
 </html>

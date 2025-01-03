@@ -100,13 +100,18 @@ if __name__ == '__main__':
     - Creates an instance of the ResetPoseServer class.
     - Keeps the node running to process reset pose requests.
     """
-    # Initialize the ROS node with the name 'reset_pose_server'
-    rospy.init_node('reset_pose_service')
+    try:
+        # Initialize the ROS node with the name 'reset_pose_server'
+        rospy.init_node('reset_pose_service')
 
-    # Create an instance of the ResetPoseServer class
-    server = ResetPoseService()
-    
-    # Keep the server running to process reset pose requests
-    rospy.spin()
+        # Create an instance of the ResetPoseServer class
+        server = ResetPoseService()
+        
+        # Keep the server running to process reset pose requests
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("Reset Pose node interrupted.")
+    except Exception as e:
+        rospy.logerr(f"An unexpected error occurred in Reset Pose: {e}")
 
 ###################################################################################################

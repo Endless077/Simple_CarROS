@@ -87,13 +87,18 @@ if __name__ == '__main__':
     """
     Main function to initialize and run the TeleopNode.
     """
-    # Initialize the ROS node with the name 'teleop_node'
-    rospy.init_node('teleop_node')
+    try:
+        # Initialize the ROS node with the name 'teleop_node'
+        rospy.init_node('teleop_node')
 
-    # Create an instance of the TeleopNode class
-    node = TeleopNode()
+        # Create an instance of the TeleopNode class
+        node = TeleopNode()
 
-    # Keep the node running to process callbacks
-    rospy.spin()
+        # Keep the node running to process callbacks
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("Teleop node interrupted.")
+    except Exception as e:
+        rospy.logerr(f"An unexpected error occurred in Teleop: {e}")
 
 ###################################################################################################

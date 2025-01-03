@@ -17,7 +17,7 @@ Run the following commands on PowerShell (as Administrator):
 2. For Web Server (port 8000):
    netsh interface portproxy add v4tov4 listenaddress=<IP_WINDOWS> listenport=8000 connectaddress=<IP_WSL2> connectport=8000
 
-Additionally, ensure the <ip_server> in index.html matches the IP of your Windows machine.
+Additionally, ensure the <ip_server> in index.html matches the IP of your Windows machine (use ipconfig on Windows CMD).
 ###################################################################################################
 EOF
 
@@ -34,7 +34,7 @@ echo "Exported ROS_HOSTNAME: $ROS_HOSTNAME"
 ###################################################################################################
 
 # Start the Python web server in the correct directory
-WEB_DIR=~/catkin_ws/src/ros_car_cmd/web
+WEB_DIR=../src/ros_car_cmd/web
 if [ -d "$WEB_DIR" ]; then
   echo "Starting Python web server in $WEB_DIR..."
   cd "$WEB_DIR"

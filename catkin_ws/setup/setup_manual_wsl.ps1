@@ -1,3 +1,5 @@
+###################################################################################################
+
 # Function to add a port forwarding rule
 function Add-PortForwarding {
     param (
@@ -8,6 +10,18 @@ function Add-PortForwarding {
     )
     Write-Host "Adding port forwarding: Listen on $ListenAddress:$ListenPort -> Connect to $ConnectAddress:$ConnectPort"
     netsh interface portproxy add v4tov4 listenaddress=$ListenAddress listenport=$ListenPort connectaddress=$ConnectAddress connectport=$ConnectPort
+}
+
+# Function to automatically add port forwarding for Python Web and WebSocket
+function Add-AutoForwarding {
+    param (
+        [string]$ListenAddress,
+        [string]$ConnectAddress
+    )
+    Write-Host "Adding automatic port forwarding for Python Web and WebSocket..."
+    Add-PortForwarding -ListenAddress $ListenAddress -ListenPort 8000 -ConnectAddress $ConnectAddress -ConnectPort 8000
+    Add-PortForwarding -ListenAddress $ListenAddress -ListenPort 9090 -ConnectAddress $ConnectAddress -ConnectPort 9090
+    Add-PortForwarding -ListenAddress $ListenAddress -ListenPort 11311 -ConnectAddress $ConnectAddress -ConnectPort 11311
 }
 
 # Function to remove a specific port forwarding rule
@@ -31,17 +45,7 @@ function Reset-PortForwarding {
     netsh interface portproxy reset
 }
 
-# Function to automatically add port forwarding for Python Web and WebSocket
-function Add-AutoForwarding {
-    param (
-        [string]$ListenAddress,
-        [string]$ConnectAddress
-    )
-    Write-Host "Adding automatic port forwarding for Python Web and WebSocket..."
-    Add-PortForwarding -ListenAddress $ListenAddress -ListenPort 8000 -ConnectAddress $ConnectAddress -ConnectPort 8000
-    Add-PortForwarding -ListenAddress $ListenAddress -ListenPort 9090 -ConnectAddress $ConnectAddress -ConnectPort 9090
-    Add-PortForwarding -ListenAddress $ListenAddress -ListenPort 11311 -ConnectAddress $ConnectAddress -ConnectPort 11311
-}
+###################################################################################################
 
 # User menu
 while ($true) {
@@ -88,3 +92,5 @@ while ($true) {
         }
     }
 }
+
+###################################################################################################

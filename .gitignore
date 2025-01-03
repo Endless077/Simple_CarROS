@@ -8,6 +8,9 @@
 /*.o
 /*.so
 
+# Environments
+.env
+
 # Python Cache
 __pycache__/
 *.pyc
