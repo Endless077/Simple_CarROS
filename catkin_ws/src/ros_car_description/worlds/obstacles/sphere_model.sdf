@@ -1,0 +1,25 @@
+<sdf version="1.6">
+  <model name="sphere">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <sphere>
+            <radius>0.5</radius>
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>0.2 0.2 0.8 1</ambient>
+        </material>
+      </visual>
+    </link>
+    <scale>1 1 1</scale>
+  </model>
+</sdf>

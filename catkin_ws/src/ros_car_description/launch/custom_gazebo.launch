@@ -17,6 +17,9 @@
     <arg name="headless" value="$(arg headless)"/>
   </include>
 
+  <!-- Obstacle Spwawn -->
+  <!-- <node name="spawn_obstacles" pkg="ros_car_description" type="spawn_obstacles.py" output="screen"/> -->
+
   <!-- Robot Spawn -->
   <param name="robot_description" command="$(find xacro)/xacro $(find ros_car_description)/urdf/ros_car.xacro" />
   
