@@ -1,0 +1,19 @@
+################################################################################
+# Minimal GMapping parameters
+################################################################################
+
+# Frequency (in seconds) at which the map is published
+map_update_interval: 5.0
+
+# Number of particles (localization hypotheses)
+particles: 30
+
+# Map boundaries (xmin, ymin, xmax, ymax)
+xmin: -100.0
+ymin: -100.0
+xmax: 100.0
+ymax: 100.0
+
+################################################################################
+# End of file
+################################################################################

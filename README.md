@@ -130,4 +130,4 @@ For support, email [antonio.garofalo125@gmail.com](mailto:antonio.garofalo125@gm
 
 ### 📝 Documentation
 
-See the documentation project **[here](https://github.com/Endless077/Simple_CarROS/blob/main/docs.pptx)**.
+See the documentation project **[here](https://github.com/Endless077/Simple_CarROS/blob/main/ros_presentation.pptx)**.

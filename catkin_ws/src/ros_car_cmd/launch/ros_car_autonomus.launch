@@ -20,5 +20,5 @@
   </node>
 
   <!-- Startup RViz -->
-  <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/default.rviz"/>
+  <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/custom.rviz"/>
 </launch>

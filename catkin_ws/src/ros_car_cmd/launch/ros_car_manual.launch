@@ -5,6 +5,10 @@
   <!-- Include the commons params -->
   <node pkg="ros_car_teleop" type="teleop_node.py" name="teleop_node" output="screen"/>
 
+  <!-- GMapping node -->
+  <!-- <rosparam file="$(find ros_car_description)/config/gmapping.yaml" command="load"/> -->
+  <!-- <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen"/> -->
+
   <!-- Startup Waypoint Manager -->
   <node pkg="ros_car_cmd" type="waypoint_manager.py" name="waypoint_manager" output="screen">
     <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml" command="load"/>
@@ -17,7 +21,7 @@
   </node>
   
   <!-- Startup RViz -->
-  <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/default.rviz"/>
+  <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find ros_car_description)/config/custom.rviz"/>
 
   <!-- Startup ROS Bridge server (websocket) -->
   <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen"/>
