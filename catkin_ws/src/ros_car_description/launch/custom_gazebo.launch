@@ -1,6 +1,6 @@
 <launch>
   <!-- Load the YAML world boundary file -->
-  <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml"/>
+  <rosparam file="$(find ros_car_cmd)/config/world_bounds.yaml"/>
 
   <!-- Launch Gazebo GUI -->
   <arg name="paused" default="false"/>
