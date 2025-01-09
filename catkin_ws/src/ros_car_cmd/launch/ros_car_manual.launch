@@ -11,7 +11,7 @@
 
   <!-- Startup Waypoint Manager -->
   <node pkg="ros_car_cmd" type="waypoint_manager.py" name="waypoint_manager" output="screen">
-    <rosparam file="$(find ros_car_cmd)/config/world_bound.yaml" command="load"/>
+    <rosparam file="$(find ros_car_cmd)/config/world_bounds.yaml" command="load"/>
     <rosparam file="$(find ros_car_cmd)/config/secret_key.yaml" command="load"/>
   </node>
 

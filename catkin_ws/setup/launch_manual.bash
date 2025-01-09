@@ -58,11 +58,16 @@ cat << EOF
 ###################################################################################################
 The environment is now set up.
 
-1. Open your browser and navigate to:
+1. Ensure the WebSocket in index.html points to:
+   ws://$IP:9090
+
+2. Open your browser and navigate to:
    http://$IP:8000/index.html
 
-2. Ensure the WebSocket in index.html points to:
-   ws://$IP:9090
+3. Add a custom Firewall Rule if needed:
+   -allow access 8000, 9090 and 11311 ports
+   -allow access from a trusted local source
+   -allow access from a trusted remote source
 
 (if you are using WSL2 remember that the ip must be that of the windows machine)
 ###################################################################################################

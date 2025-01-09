@@ -196,8 +196,8 @@
       <publishTf>true</publishTf>						                    <!-- Publish TF transforms -->
       <publishOdomTF>true</publishOdomTF>				                <!-- Publish odom->base_link TF -->
       <publishWheelTF>false</publishWheelTF>				            <!-- No wheel TF broadcast -->
+      <publishWheelJointState>true</publishWheelJointState>			<!-- Publish wheel joint states -->
       <commandTimeout>1.0</commandTimeout>				              <!-- Stop if no cmd_vel after 1s -->
-      <updateRate>100</updateRate>					                    <!-- Plugin update frequency (Hz) -->
       <wheelTorque>5.0</wheelTorque>					                  <!-- Max torque on wheels -->
       <wheelAcceleration>0.0</wheelAcceleration>				        <!-- Max wheel acceleration (0=unlimited) -->
       <wheelDiameter>${2 * wheel_radius}</wheelDiameter>			  <!-- Wheel diameter (m) -->
@@ -206,10 +206,10 @@
       <odometryFrame>odom</odometryFrame>					              <!-- Frame for odom data -->
       <odometryTopic>odom</odometryTopic>					              <!-- Topic for odom data -->
       <commandTopic>cmd_vel</commandTopic>					            <!-- Topic for velocity cmds -->
-      <publishWheelJointState>true</publishWheelJointState>			<!-- Publish wheel joint states -->
       <leftJoint>joint_wheel_left</leftJoint>				            <!-- Name of the left joint -->
       <rightJoint>joint_wheel_right</rightJoint>				        <!-- Name of the right joint -->
       <rosDebugLevel>INFO</rosDebugLevel>					              <!-- Debug level -->
+      <updateRate>60</updateRate>					                      <!-- Update frequency (Hz) -->
     </plugin>
   </gazebo>
 </robot>

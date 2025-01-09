@@ -24,9 +24,9 @@ class WaypointManager:
         - Sets up a ROS service to handle waypoint requests.
         """
         # Read initial waypoints from the parameter server
-        self.current_waypoint = rospy.get_param('/current_waypoint', [0.0, 0.0])
-        self.last_waypoint = rospy.get_param('/last_waypoint', [-1.0, -1.0])
-        self.next_waypoint = rospy.get_param('/next_waypoint', [2.0, 1.5])
+        self.current_waypoint = rospy.get_param('~current_waypoint', [0.0, 0.0])
+        self.last_waypoint = rospy.get_param('~last_waypoint', [-1.0, -1.0])
+        self.next_waypoint = rospy.get_param('~next_waypoint', [2.0, 1.5])
 
         # World bounds for waypoint generation loaded from parameter server
         self.world_bounds = rospy.get_param('/world_bounds', {
