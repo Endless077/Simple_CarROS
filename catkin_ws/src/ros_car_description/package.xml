@@ -2,7 +2,7 @@
 <package format="2">
   <name>ros_car_description</name>
   <version>0.0.0</version>
-  <description>The robo_car_description package</description>
+  <description>Description package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
