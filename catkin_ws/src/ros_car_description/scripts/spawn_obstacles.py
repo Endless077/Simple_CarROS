@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import rospy
 import random
@@ -99,8 +99,14 @@ def spawn_random_obstacles(max_obstacles=10, model_paths=None):
 
 if __name__ == "__main__":
     try:
-        # List of model paths (SDF files with <scale> tag)
-        model_paths = file_paths("../worlds/obstacles/")
+        # Find the absolute path of the current script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Construct the absolute path to the obstacles directory
+        obstacles_dir = os.path.join(current_dir, "../worlds/obstacles/")
+
+        # Get the list of model paths (SDF files with <scale> tag)
+        model_paths = file_paths(obstacles_dir)
 
         # Run the function to spawn random obstacles
         spawn_random_obstacles(max_obstacles=10, model_paths=model_paths)
