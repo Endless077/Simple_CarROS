@@ -48,7 +48,7 @@ Make sure you have installed:
      ```
 
 4. **Gazebo Dependencies**:
-   - At first launch Gazebo may require additional dipenences
+   - At first launch Gazebo may require additional dipenences.
      
 5. **Run the Simulation**:
    - Launch an Autonomous Simulation with:
