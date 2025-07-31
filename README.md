@@ -1,4 +1,4 @@
-![Logo](https://github.com/Endless077/Simple-CarROS/blob/main/ros_logo.png)
+![Wallpaper](https://github.com/Endless077/Simple-CarROS/blob/main/ros_logo.png)
 
 # CarROS 🚗
 
