@@ -1,4 +1,4 @@
-![Logo](https://github.com/Endless077/Simple-CarROS/blob/main/ros_logo.png)
+![Wallpaper](https://github.com/Endless077/Simple-CarROS/blob/main/ros_logo.png)
 
 # CarROS 🚗
 
@@ -125,7 +125,7 @@ This project is licensed under the GNU General Public License v3.0.
 
 ## 🔔 Support
 
-For support, email [antonio.garofalo125@gmail.com](mailto:antonio.garofalo125@gmail.com) or contact the project contributors.
+For support, feel free to reach out via [GitHub](https://github.com/Endless077) or contact the project contributors.
 
 
 ### 📝 Documentation

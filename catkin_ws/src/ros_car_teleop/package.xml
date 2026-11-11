@@ -2,7 +2,7 @@
 <package format="2">
   <name>ros_car_teleop</name>
   <version>0.0.0</version>
-  <description>The ros_car_teleop package</description>
+  <description>Teleop package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
